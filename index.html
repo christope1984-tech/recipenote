@@ -228,10 +228,22 @@ input[type=number]{font-family:var(--f-num)}
 .save-row .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 
 /* 원가표 */
-.sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.sum div{flex:1 1 120px;background:var(--surface);border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
+.sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.sum div{min-width:0;background:var(--surface);border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
 .sum b{display:block;font-family:var(--f-num);font-size:20px;font-weight:600}
-.sum span{font-size:12px;color:var(--muted)}
+.sum span{font-size:12px;color:var(--muted);line-height:1.35;display:block}
+.clist{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.crow{width:100%;display:grid;gap:8px;text-align:left;border:0;border-top:1px solid var(--line);background:none;padding:14px 16px}
+.crow:first-child{border-top:0}
+.crow:active{background:var(--accent-soft)}
+.c-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.c-name{font-weight:700;font-size:16px;min-width:0}
+.c-top .chip{font-size:13px;padding:2px 8px;flex:none}
+.crow .bar{margin-top:0}
+.c-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.c-stats span{min-width:0;font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;line-height:1.3}
+.c-stats small{display:block;font-family:var(--f-body);font-size:11.5px;font-weight:500;color:var(--muted);margin-bottom:2px}
+.c-stats .over{color:var(--bad)}
 .tbl-wrap{overflow-x:auto;background:var(--surface);border-radius:12px;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse;min-width:460px}
 th{font-size:12px;font-weight:500;color:var(--muted);text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -681,16 +693,22 @@ function viewCost() {
   const t = n(db.settings.target) || 33;
   return `
   <div class="sum">
-    <div><b>${sold.length ? avg.toFixed(1) + '%' : '—'}</b><span>평균 원가율 (목표 ${t}%)</span></div>
-    <div><b style="color:${over ? 'var(--bad)' : 'var(--good)'}">${over}</b><span>원가율 목표 +5%p 초과</span></div>
-    <div><b style="color:${late ? 'var(--bad)' : 'var(--good)'}">${late}</b><span>서빙 목표 시간 초과</span></div>
+    <div><b>${sold.length ? avg.toFixed(1) + '%' : '—'}</b><span>평균 원가율<br>목표 ${t}%</span></div>
+    <div><b style="color:${over ? 'var(--bad)' : 'var(--good)'}">${over}</b><span>원가율<br>목표 +5%p 초과</span></div>
+    <div><b style="color:${late ? 'var(--bad)' : 'var(--good)'}">${late}</b><span>서빙 시간<br>목표 초과</span></div>
   </div>
-  ${rows.length ? `<div class="tbl-wrap"><table>
-    <thead><tr><th>메뉴</th><th>원가</th><th>판매가</th><th>원가율</th><th>서빙</th></tr></thead>
-    <tbody>${(sold.length ? sold.concat(rows.filter(x => x.c.rate == null)) : rows).map(({ r, c, tt }) => `<tr data-act="open" data-id="${r.id}"><td>${esc(r.name)}</td><td>${won(c.per)}</td><td>${n(r.salePrice) ? won(r.salePrice) : '—'}</td>
-      <td>${c.rate == null ? '—' : `${c.rate.toFixed(1)}%<div class="bar ${rateCls(c.rate)}"><i style="width:${Math.min(c.rate, 60) / 60 * 100}%"></i></div>`}</td>
-      <td class="${n(r.targetMin) && tt > n(r.targetMin) ? 'over' : ''}">${minTxt(tt)}${n(r.targetMin) ? `<br><span style="font-size:11.5px;color:var(--muted)">목표 ${n(r.targetMin)}분</span>` : ''}</td></tr>`).join('')}</tbody>
-  </table></div>` : '<div class="empty">등록된 메뉴가 없습니다.</div>'}
+  ${rows.length ? `<div class="clist">${(sold.length ? sold.concat(rows.filter(x => x.c.rate == null)) : rows).map(({ r, c, tt }) => {
+    const tg = n(r.targetMin), late = tg && tt > tg;
+    return `<button class="crow" data-act="open" data-id="${r.id}">
+      <div class="c-top"><span class="c-name">${esc(r.name)}</span>${chip(c.rate)}</div>
+      ${c.rate == null ? '' : `<div class="bar ${rateCls(c.rate)}"><i style="width:${Math.min(c.rate, 60) / 60 * 100}%"></i></div>`}
+      <div class="c-stats">
+        <span><small>원가</small>${won(c.per)}</span>
+        <span><small>판매가</small>${n(r.salePrice) ? won(r.salePrice) : '—'}</span>
+        <span class="${late ? 'over' : ''}"><small>서빙${tg ? ' / 목표' : ''}</small>${minTxt(tt)}${tg ? ` / ${tg}분` : ''}</span>
+      </div>
+    </button>`;
+  }).join('')}</div>` : '<div class="empty">등록된 메뉴가 없습니다.</div>'}
   <p class="stamp">원가는 등록한 구매 단가, 서빙 시간은 주문 후 조리 단계 시간의 합입니다.</p>`;
 }
 
