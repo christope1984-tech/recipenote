@@ -24,7 +24,7 @@
   /* 붉은달빛주점 전용 다크 테마 — 휴대폰 밝기 설정과 상관없이 고정 */
   --bg:#130D0D; --surface:#1E1616; --ink:#F0E6E3; --muted:#A8958F; --line:#35282A;
   --accent:#E2665C; --accent-ink:#1A0B0A; --accent-soft:#3A1D1D;
-  --ticket:#D7B061; --ticket-ink:#22180A;
+  --ticket:#D7B061; --ticket-ink:#22180A; --gold-soft:#2A2214;
   --good:#71D29C; --warn:#E6AE55; --bad:#FF8A65; --good-bg:#183326; --warn-bg:#352a14; --bad-bg:#3d2117;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.35);
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
@@ -271,10 +271,60 @@ td .over{color:var(--bad)}
 .warnbox{font-size:12.5px;color:var(--warn);background:var(--warn-bg);border-radius:10px;padding:9px 12px;margin:0}
 .vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 
+/* 벤치마킹노트 */
+input[type=date],input[type=time]{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:16px;font-family:var(--f-num);-webkit-appearance:none;appearance:none;color:var(--ink)}
+.lead{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.bsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 56px);z-index:4;background:var(--bg);padding-block:2px 10px;display:grid;gap:8px}
+.bmode{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.bmode button{border:0;background:none;border-radius:9px;height:40px;font-weight:700;color:var(--muted)}
+.bmode button.on{background:var(--accent);color:var(--accent-ink)}
+.bnav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.bnav button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:4px 0;display:grid;font-size:11.5px;color:var(--muted);line-height:1.3;min-width:0}
+.bnav b{font-family:var(--f-num);color:var(--accent);font-size:13px}
+.bstack{display:grid;gap:10px}
+.bsec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;min-width:0;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 56px + 104px)}
+.bsec-h{display:flex;gap:10px;align-items:flex-start}
+.bsec-h h2{font-size:17px}
+.bsec-h p{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+.bsub h3{font-size:16px;margin-top:6px}
+.bsub p{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+.bgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bgrid .full{grid-column:1/-1}
+.fhelp{font-size:11.5px;color:var(--muted)}
+.unit{display:flex;min-width:0}
+.unit input{border-top-right-radius:0;border-bottom-right-radius:0}
+.unit span{flex:none;display:grid;place-items:center;padding:0 10px;border:1px solid var(--line);border-left:0;border-radius:0 10px 10px 0;color:var(--muted);font-size:14px;background:var(--bg)}
+.bcalc{display:block;background:var(--accent-soft);color:var(--ticket);border-radius:10px;padding:10px 12px;font-family:var(--f-num);font-size:15px;min-height:44px}
+.auto{font-style:normal;font-size:10.5px;letter-spacing:.06em;color:var(--ticket);background:var(--accent-soft);border-radius:4px;padding:1px 5px;margin-left:4px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:14px}
+.opt[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.bitem{background:var(--bg);border-radius:12px;padding:12px;display:grid;gap:10px;min-width:0}
+.bitem-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bitem-h h3{font-size:15px}
+.ctag{font-family:var(--f-num);font-size:12.5px;color:var(--ticket);font-weight:500;margin-left:4px}
+.btn-sm{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+.tone-prep,.tone-cook{border-radius:10px;padding:10px;display:grid;gap:6px}
+.tone-prep{background:var(--accent-soft)}
+.tone-cook{background:var(--gold-soft)}
+.tone-prep .flabel,.tone-cook .flabel{color:var(--ink)}
+.score-row{display:grid;gap:4px;padding:10px 0;border-top:1px solid var(--line)}
+.score-row:first-child{border-top:0;padding-top:0}
+.score-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.score-top b{font-size:15px}
+.score-row small{font-size:11.5px;color:var(--muted)}
+.score-row input{margin-top:4px}
+.dots{display:flex;gap:5px;flex:none}
+.dots button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-family:var(--f-num);font-size:14px}
+.dots button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.bavg{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.bavg output{font-family:var(--f-num);font-size:20px;color:var(--ticket);font-weight:600}
+details.card summary{cursor:pointer}
+
 /* 하단 탭 / FAB / 시트 / 토스트 */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--surface);border-top:1px solid var(--line);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
-.tabs-in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);height:var(--nav-h)}
+.tabs-in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:var(--nav-h)}
 .tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--muted)}
 .tab svg{width:22px;height:22px}
 .tab.on{color:var(--accent);font-weight:700}
@@ -315,12 +365,14 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--surfa
 <main class="wrap" id="view"></main>
 
 <button class="fab" id="fab" data-act="new">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>메뉴 등록
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="fab-l">메뉴 등록</span>
 </button>
 
 <nav class="tabs" aria-label="주 메뉴"><div class="tabs-in">
   <button class="tab" data-act="tab" data-tab="list" id="t-list">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg>레시피</button>
+  <button class="tab" data-act="tab" data-tab="bench" id="t-bench">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5M8 10.5h5M10.5 8v5"/></svg>벤치마킹노트</button>
   <button class="tab" data-act="tab" data-tab="cost" id="t-cost">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>원가·시간표</button>
   <button class="tab" data-act="tab" data-tab="settings" id="t-settings">
@@ -414,7 +466,8 @@ function sampleData() {
   };
 }
 function normalize(d) {
-  d.settings = Object.assign({ shop: '', target: 33 }, d.settings || {});
+  d.settings = Object.assign({ shop: '', target: 33, benchMode: 'simple' }, d.settings || {});
+  d.bench = (Array.isArray(d.bench) ? d.bench : []).filter(x => x && typeof x === 'object').map(bNormalize);
   d.prepLog = Object.assign({ date: '', done: [] }, d.prepLog || {});
   d.recipes = d.recipes.map(r => Object.assign({ category:'안주', yieldUnit:'접시', salePrice:0, targetMin:'', prepBatch:10, prepStorage:'', ingredients:[], prepSteps:[], serviceSteps:[], memo:'' }, r));
   return d;
@@ -435,7 +488,7 @@ function load() {
 function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { return false; } }
 
 let db = load();
-const state = { tab:'list', view:'list', id:null, phase:'prep', q:'', cat:'전체', batch:10, orders:1, checked:new Set(), draft:null, editFrom:null, timer:null, sheetCb:null };
+const state = { tab:'list', view:'list', id:null, phase:'prep', q:'', cat:'전체', batch:10, orders:1, checked:new Set(), draft:null, editFrom:null, timer:null, sheetCb:null, bid:null };
 
 /* ===== 2. 계산 ===== */
 const n = v => { const x = parseFloat(String(v ?? '').replace(/,/g, '')); return isFinite(x) ? x : 0; };
@@ -477,11 +530,13 @@ function setTop(title, back, action = '') { $('topbar').innerHTML = (back ? BACK
 
 function render() {
   const v = state.view;
-  $('view').innerHTML = v === 'detail' ? viewDetail() : v === 'edit' ? viewEdit() : v === 'cost' ? viewCost() : v === 'settings' ? viewSettings() : viewList();
+  $('view').innerHTML = v === 'detail' ? viewDetail() : v === 'edit' ? viewEdit() : v === 'cost' ? viewCost() : v === 'settings' ? viewSettings() : v === 'bench' ? viewBench() : v === 'bench-edit' ? viewBenchEdit() : viewList();
   if (state.view === 'list') $('list').innerHTML = listHTML();
   if (state.view === 'edit') updateLive();
-  $('fab').hidden = state.view !== 'list';
-  ['list','cost','settings'].forEach(t => { const b = $('t-' + t); b.classList.toggle('on', state.tab === t); b.setAttribute('aria-current', state.tab === t ? 'page' : 'false'); });
+  if (state.view === 'bench-edit') bRefresh();
+  $('fab').hidden = !(state.view === 'list' || state.view === 'bench');
+  $('fab-l').textContent = state.view === 'bench' ? '새 보고서' : '메뉴 등록';
+  ['list','bench','cost','settings'].forEach(t => { const b = $('t-' + t); b.classList.toggle('on', state.tab === t); b.setAttribute('aria-current', state.tab === t ? 'page' : 'false'); });
   $('view').style.animation = 'none'; void $('view').offsetWidth; $('view').style.animation = '';
 }
 
@@ -739,8 +794,379 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v0.6 · 메뉴 ${db.recipes.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v0.7 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
+}
+
+/* ===== 벤치마킹노트 =====
+   보고서 하나 = 상세 7칸. 간편 보고서는 같은 데이터에서 핵심 칸만 보여 줌 → 간편↔상세 바꿔도 내용 유지
+   필드 h:1 = 휴대폰에서 반 칸(두 개 나란히), 나머지는 한 줄 전체 */
+const DAYS = '일월화수목금토';
+const B_SECTIONS = [
+  { id:'basic', no:1, short:'기본', title:'기본 정보', hint:'영수증과 사진을 보며 채워요', fields:[
+    { k:'store', label:'가게 이름', ph:'예: 골목 다찌' },
+    { k:'area', label:'동네·상권', ph:'예: ○○역 2번 출구, 아파트 단지 앞' },
+    { k:'type', label:'가게 형태', type:'chips', options:['다찌','오픈 주방','테이블','섞여 있음'] },
+    { k:'companion', label:'같이 간 사람', ph:'예: 지인 1명, 운영 담당' },
+    { k:'date', label:'방문 날짜', type:'date', h:1 },
+    { k:'people', label:'인원', type:'number', unit:'명', h:1 },
+    { k:'enter', label:'들어간 시각', type:'time', h:1 },
+    { k:'leave', label:'나온 시각', type:'time', h:1 },
+    { k:'spent', label:'쓴 돈', type:'number', unit:'원', h:1 },
+    { calc:'perHead', label:'1인 객단가', h:1 },
+    { calc:'dayStay', label:'요일 · 머문 시간' },
+    { k:'q1', label:'오늘의 질문 1', ph:'예: 왜 가리비찜이 이렇게 잘 나갈까' },
+    { k:'q2', label:'오늘의 질문 2', ph:'예: 혼자서 몇 명까지 받을까' },
+    { k:'q3', label:'오늘의 질문 3', ph:'예: 칠판 메뉴는 몇 개, 얼마나 자주 바뀔까' } ] },
+  { id:'impression', no:2, short:'인상', title:'첫인상', hint:'문 앞에서 내 자리까지, 한 줄씩', fields:[
+    { k:'door', label:'문 앞', type:'area', ph:'간판, 입간판, 들어설 때 첫 냄새' },
+    { k:'seat', label:'내 자리', type:'area', ph:'다찌 간격, 의자 높이, 가방 둘 곳' },
+    { k:'senses', label:'빛 · 소리 · 냄새', type:'area', ph:'조명 색, 음악 크기, 실내 온도' } ] },
+  { id:'menu', no:3, short:'메뉴판', title:'메뉴판', hint:'주문하면서 찍은 메뉴판 사진을 보며', fields:[
+    { k:'groups', label:'갈래', ph:'예: 찜·탕 / 볶음 / 별미 / 사이드' },
+    { k:'count', label:'메뉴 수', type:'number', unit:'개', h:1 },
+    { k:'common', label:'많은 가격대', ph:'예: 1만 8천~2만', h:1 },
+    { k:'min', label:'제일 싼 메뉴', type:'number', unit:'원', h:1 },
+    { k:'max', label:'제일 비싼 메뉴', type:'number', unit:'원', h:1 },
+    { k:'badge', label:'추천 표시', ph:'예: ‘추천’ 3개, 대표 메뉴 맨 위' },
+    { k:'solo', label:'혼자 손님 메뉴', type:'chips', options:['있음','없음','반 접시 가능'] },
+    { k:'addon', label:'더하기 옵션', ph:'예: 칼국수 사리 +3,000원' },
+    { k:'rotating', label:'바뀌는 칸', ph:'예: 칠판 4개, 남은 접시 수 표시' } ] },
+  { id:'dishes', no:4, short:'접시', title:'접시 기록', hint:'나온 순서대로, 접시마다 세 단어', list:true },
+  { id:'kitchen', no:5, short:'주방', title:'주방과 운영', hint:'레시피노트처럼 밑작업과 영업 조리를 나눠서', fields:[
+    { k:'prep', label:'밑작업 짐작 · 영업 전에 돼 있던 것', type:'area', tone:'prep', ph:'예: 가리비 해감·손질 끝, 버터 소스 병에' },
+    { k:'cook', label:'영업 조리 · 주문 후에 한 것', type:'area', tone:'cook', ph:'예: 술 붓고 뚜껑, 마지막에 버터와 쪽파' },
+    { k:'burners', label:'화구 수', type:'number', unit:'개', h:1 },
+    { k:'staff', label:'운영 인원', type:'number', unit:'명', h:1 },
+    { k:'busyAt', label:'바빠 보이기 시작한 손님 수', type:'number', unit:'명' },
+    { k:'cleanup', label:'정리·설거지', ph:'예: 주문 사이 틈틈이' } ] },
+  { id:'guests', no:6, short:'손님', title:'손님과 돈', hint:'모두 짐작값이에요. 정확함보다 비교가 목적', fields:[
+    { k:'mix', label:'손님 구성', ph:'예: 혼자 2명, 둘 4팀, 셋 이상 1팀' },
+    { k:'age', label:'나이대·동네 손님', ph:'예: 30~40대, 퇴근길 동네 손님' },
+    { k:'seats', label:'좌석 수', type:'number', unit:'석', h:1 },
+    { k:'turns', label:'한 자리 회전', type:'number', unit:'바퀴', step:'0.5', h:1 },
+    { calc:'dailyGuests', label:'하루 손님 짐작', h:1 },
+    { calc:'dailySales', label:'하루 매출 짐작', h:1 },
+    { k:'drinks', label:'술 가격과 비중', ph:'예: 소주 5,000원, 팀마다 1~2병' },
+    { k:'talk', label:'사장의 말', type:'area', ph:'언제, 어떤 말로 말을 걸었나' },
+    { k:'last', label:'마지막 인상', type:'area', ph:'계산하고 나갈 때 들은 한마디' } ] },
+  { id:'wrap', no:7, short:'정리', title:'정리', hint:'점수 옆에 ‘왜’ 한 줄, 그리고 가져올 것·바꿀 것·피할 것', special:true }
+];
+const B_DISH = [
+  { k:'name', label:'메뉴 이름', ph:'예: 가리비 버터찜' },
+  { k:'price', label:'가격', type:'number', unit:'원', h:1 },
+  { calc:'cook', label:'조리 시간', h:1 },
+  { k:'ordered', label:'주문 시각', type:'time', h:1, help:'메뉴판 사진 찍은 시각' },
+  { k:'served', label:'나온 시각', type:'time', h:1, help:'접시 사진 찍은 시각' },
+  { k:'portion', label:'양', type:'chips', options:['1인분','1.5인분','2인분 이상'] },
+  { k:'w1', label:'맛 한 단어', ph:'예: 버터 향', h:1 },
+  { k:'w2', label:'장면 한 단어', ph:'예: 뚜껑 열 때 김', h:1 },
+  { k:'w3', label:'숫자 하나', ph:'예: 가리비 8개', h:1 },
+  { k:'temp', label:'온도', ph:'예: 끝까지 뜨거움', h:1 },
+  { k:'plating', label:'담음새', ph:'예: 무쇠 냄비째, 쪽파 듬뿍' },
+  { k:'guess', label:'재료·소스 짐작', ph:'예: 생물 가리비, 버터 소스 직접' },
+  { k:'word', label:'기억에 남는 이유 한 단어', ph:'예: 향' }
+];
+const B_IDEA = [
+  { k:'from', label:'영감 받은 접시', ph:'예: 칠판 꼬막무침', list:'b-dishnames' },
+  { k:'why', label:'맛있었던 이유', ph:'예: 새콤함이 먼저, 작은 접시라 부담 없음' },
+  { k:'myway', label:'내 방식으로', ph:'예: 제철 칠판 첫 메뉴로, 혼자 손님용 반 접시도' },
+  { k:'prep', label:'예상 밑작업 · 영업 전', type:'area', tone:'prep', ph:'예: 꼬막 해감·삶아 까 두기, 양념장 미리' },
+  { k:'cook', label:'예상 영업 조리 · 주문 후', type:'area', tone:'cook', ph:'예: 채소와 무쳐 담고 참기름 마무리' },
+  { k:'target', label:'목표 시간', type:'number', unit:'분', h:1 },
+  { k:'result', label:'시험 결과', ph:'시험한 날, 좋았던 점, 고칠 점' }
+];
+const B_THREE = [
+  { k:'keep', label:'가져올 것', type:'area', ph:'예: 칠판에 오늘 남은 접시 수 적기' },
+  { k:'change', label:'바꿀 것', type:'area', ph:'예: 2인 찜을 1.5인분 작은 냄비로' },
+  { k:'avoid', label:'피할 것', type:'area', ph:'예: 바쁠 때 말없이 오래 기다리게 한 것' }
+];
+const B_SCORES = [
+  ['taste','맛','1 생각 안 남 · 3 무난 · 5 다음 날도 생각남'],
+  ['value','양과 가격','1 비쌈 · 3 값만큼 · 5 이 값이면 또 옴'],
+  ['mood','분위기','1 빨리 나가고 싶음 · 3 편함 · 5 더 있고 싶음'],
+  ['speed','속도와 응대','1 오래 기다림 · 3 보통 · 5 기다림 못 느낌'],
+  ['revisit','다시 갈 마음','1 안 갈 듯 · 3 기회 되면 · 5 꼭 다시']
+];
+const pick = (defs, keys) => keys.map(k => defs.find(f => (f.k || f.calc) === k)).filter(Boolean);
+
+function buid() { return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function bBlankDish() { return { name:'', price:'', ordered:'', served:'', portion:'', w1:'', w2:'', w3:'', temp:'', plating:'', guess:'', word:'' }; }
+function bBlankIdea() { return { from:'', why:'', myway:'', prep:'', cook:'', target:'', result:'' }; }
+function bBlank() {
+  return { kind:'benchmark-report', v:1, id:buid(), createdAt:new Date().toISOString(), updatedAt:null,
+    basic:{}, impression:{}, menu:{}, dishes:[bBlankDish()], kitchen:{}, guests:{},
+    wrap:{ scores:{}, reasons:{}, keep:'', change:'', avoid:'' }, ideas:[bBlankIdea()] };
+}
+function bNormalize(r) {
+  const b = bBlank();
+  Object.keys(b).forEach(k => { if (r[k] == null) r[k] = b[k]; });
+  r.wrap = Object.assign({ scores:{}, reasons:{}, keep:'', change:'', avoid:'' }, r.wrap);
+  r.wrap.scores = r.wrap.scores || {}; r.wrap.reasons = r.wrap.reasons || {};
+  if (!Array.isArray(r.dishes) || !r.dishes.length) r.dishes = [bBlankDish()];
+  if (!Array.isArray(r.ideas) || !r.ideas.length) r.ideas = [bBlankIdea()];
+  return r;
+}
+function bSample() {
+  const r = bBlank();
+  r.basic = { store:'[예시] 골목 다찌', area:'역 2번 출구, 아파트 단지 앞 골목', type:'다찌', date:'2026-10-23', companion:'지인 1명, 운영 담당',
+    enter:'18:40', leave:'20:35', people:'2', spent:'68000',
+    q1:'왜 가리비찜이 이렇게 잘 나갈까', q2:'혼자서 몇 명까지 받을까', q3:'칠판 메뉴는 몇 개, 얼마나 자주 바뀔까' };
+  r.impression = { door:'작은 나무 간판, 입간판에 손글씨 칠판. 문 열자 버터와 간장 냄새', seat:'ㄷ자 10석, 옆 사람과 팔꿈치 한 뼘. 가방 고리 있음', senses:'주황 조명, 음악은 대화보다 작게, 주방 열기로 조금 더움' };
+  r.menu = { count:'16', groups:'찜·탕 / 볶음 / 별미 / 사이드', min:'5000', max:'27000', common:'1만 8천~2만 1천', badge:'‘추천’ 3개, 대표 메뉴 맨 위', solo:'반 접시 가능', addon:'칼국수 사리 +3,000원', rotating:'칠판 4개, 남은 접시 수를 분필로 지움' };
+  r.dishes = [
+    { name:'가리비 버터찜', price:'21000', ordered:'18:46', served:'19:00', portion:'2인분 이상', w1:'버터 향', w2:'뚜껑 열 때 김', w3:'가리비 8개', temp:'끝까지 뜨거움', plating:'무쇠 냄비째, 쪽파 듬뿍', guess:'생물 가리비, 버터 소스는 병에 미리', word:'향' },
+    { name:'칠판 꼬막무침', price:'15000', ordered:'19:05', served:'19:11', portion:'1인분', w1:'새콤', w2:'작은 접시', w3:'남은 수 3', temp:'차갑게', plating:'얕은 접시, 깨와 실파', guess:'삶아 까 둔 꼬막, 양념장 미리', word:'가벼움' },
+    { name:'명란 계란말이', price:'13000', ordered:'19:20', served:'19:29', portion:'1.5인분', w1:'촉촉', w2:'두툼한 높이', w3:'8조각', temp:'따뜻함', plating:'긴 접시, 마요 따로', guess:'계란물 미리 풀어 둠', word:'폭신' } ];
+  r.kitchen = { prep:'가리비 해감·손질 끝, 버터 소스 병에, 꼬막 삶아 까 둠, 계란물 미리', cook:'가리비에 술 붓고 뚜껑, 마지막에 버터와 쪽파. 꼬막은 무쳐서 바로', burners:'4', staff:'1', busyAt:'8', cleanup:'주문 사이 틈틈이, 큰 냄비는 마감 후' };
+  r.guests = { mix:'혼자 2명, 둘 3팀', age:'30~40대, 퇴근길 동네 손님', seats:'10', turns:'2', drinks:'소주 5,000원, 하이볼 7,000원, 팀마다 1~2병', talk:'접시 낼 때 ‘뜨거우니 국물 먼저’ 한마디, 단골에겐 이름 부름', last:'‘칠판 바뀌면 또 오세요’' };
+  r.wrap = { scores:{ taste:4, value:3, mood:5, speed:3, revisit:4 },
+    reasons:{ taste:'가리비 향이 강하고 간이 딱', value:'찜이 2인 기준이라 혼자면 부담', mood:'사장 말투가 편하고 조명이 따뜻함', speed:'8명 넘으니 15분 넘게 기다림', revisit:'칠판 메뉴가 궁금해서' },
+    keep:'칠판에 오늘 남은 접시 수 적기', change:'2인 찜을 1.5인분 작은 냄비로', avoid:'바쁠 때 말없이 오래 기다리게 한 것' };
+  r.ideas = [{ from:'칠판 꼬막무침', why:'새콤함이 먼저 오고, 작은 접시라 부담 없음', myway:'제철 칠판 첫 메뉴로, 혼자 손님용 반 접시도', prep:'꼬막 해감·삶아 까 두기, 양념장 미리', cook:'채소와 무쳐 담고 참기름 마무리', target:'5', result:'' }];
+  r.updatedAt = new Date().toISOString();
+  return r;
+}
+const bCur = () => db.bench.find(x => x.id === state.bid);
+function bIsEmpty(r) {
+  return !r.basic.store && !r.dishes.some(d => d.name) && !r.wrap.keep && !Object.values(r.wrap.scores).some(Boolean) && !r.ideas.some(i => i.from || i.myway);
+}
+function bPrune() { const before = db.bench.length; db.bench = db.bench.filter(r => !bIsEmpty(r)); if (db.bench.length !== before) save(); }
+function getP(o, p) { return p.split('.').reduce((a, k) => a == null ? undefined : a[k], o); }
+function setP(o, p, v) { const ks = p.split('.'); let a = o; for (let i = 0; i < ks.length - 1; i++) { if (a[ks[i]] == null) a[ks[i]] = {}; a = a[ks[i]]; } a[ks[ks.length - 1]] = v; }
+
+/* 자동 계산 */
+const bnum = v => { const x = parseFloat(String(v ?? '').replace(/,/g, '')); return isFinite(x) ? x : null; };
+function bmins(a, b) { if (!a || !b) return null; const x = a.split(':'), y = b.split(':'); let d = (+y[0] * 60 + +y[1]) - (+x[0] * 60 + +x[1]); if (d < 0) d += 1440; return d; }
+const bStay = m => m >= 60 ? `${Math.floor(m / 60)}시간 ${m % 60}분` : `${m}분`;
+const manwon = v => v >= 10000 ? (Math.round(v / 1000) / 10).toLocaleString('ko-KR') + '만 원' : won(v);
+const bDay = date => date ? DAYS[new Date(date + 'T12:00:00').getDay()] : '';
+function bPerHead(r) { const s = bnum(r.basic.spent), p = bnum(r.basic.people); return s && p ? s / p : null; }
+function bDaily(r) { const s = bnum(r.guests.seats), t = bnum(r.guests.turns); return s && t ? Math.round(s * t) : null; }
+const BCALC = {
+  dayStay: r => { const m = bmins(r.basic.enter, r.basic.leave); return (r.basic.date ? bDay(r.basic.date) + '요일' : '—') + ' · ' + (m == null ? '—' : bStay(m)); },
+  perHead: r => { const p = bPerHead(r); return p == null ? '—' : won(p); },
+  cook: (r, base) => { const d = getP(r, base) || {}; const m = bmins(d.ordered, d.served); return m == null ? '—' : m + '분'; },
+  dailyGuests: r => { const g = bDaily(r); return g == null ? '—' : g + '명'; },
+  dailySales: r => { const g = bDaily(r), p = bPerHead(r); return g && p ? '약 ' + manwon(g * p) : (g ? '쓴 돈·인원 필요' : '—'); }
+};
+function bAvg(r) { const v = B_SCORES.map(s => r.wrap.scores[s[0]]).filter(Boolean); return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : null; }
+
+/* 그리기 */
+function bField(f, base) {
+  const cls = 'field' + (f.h ? '' : ' full');
+  if (f.calc) return `<div class="${cls}"><span class="flabel">${esc(f.label)} <em class="auto">자동</em></span><output class="bcalc" data-bcalc="${f.calc}${base ? ':' + base : ''}">—</output></div>`;
+  const path = base ? base + '.' + f.k : f.k, id = 'b-' + path.replace(/\./g, '-');
+  const v = getP(bCur(), path) ?? '';
+  if (f.type === 'chips') return `<div class="${cls}"><span class="flabel">${esc(f.label)}</span><div class="opts" role="group" aria-label="${esc(f.label)}">${f.options.map(o => `<button type="button" class="opt" data-act="b-chip" data-path="${path}" data-val="${esc(o)}" aria-pressed="${v === o}">${esc(o)}</button>`).join('')}</div></div>`;
+  let ctl;
+  if (f.type === 'area') ctl = `<textarea id="${id}" rows="2" data-bp="${path}" placeholder="${esc(f.ph || '')}">${esc(v)}</textarea>`;
+  else {
+    const t = f.type || 'text';
+    let extra = t === 'number' ? ` inputmode="decimal" min="0" step="${f.step || '1'}"` : '';
+    if (f.list) extra += ` list="${f.list}" autocomplete="off"`;
+    ctl = `<input id="${id}" type="${t}" data-bp="${path}" value="${esc(v)}" placeholder="${esc(f.ph || '')}"${extra}>`;
+    if (f.unit) ctl = `<div class="unit">${ctl}<span>${esc(f.unit)}</span></div>`;
+  }
+  const inner = `<label class="flabel" for="${id}">${esc(f.label)}</label>${ctl}${f.help ? `<span class="fhelp">${esc(f.help)}</span>` : ''}`;
+  return `<div class="${cls}">${f.tone ? `<div class="tone-${f.tone}">${inner}</div>` : inner}</div>`;
+}
+const bGrid = (fields, base) => `<div class="bgrid">${fields.map(f => bField(f, base)).join('')}</div>`;
+const bSec = (no, id, title, hint, inner) => `<section class="bsec" id="bs-${id}"><div class="bsec-h"><span class="no">${no}</span><div><h2>${title}</h2>${hint ? `<p>${hint}</p>` : ''}</div></div>${inner}</section>`;
+function bDishes(r, defs) {
+  return `<div class="bstack">${r.dishes.map((d, i) => `<div class="bitem" data-key="dishes"><div class="bitem-h"><h3>접시 ${i + 1} <span class="ctag" data-bcook="${i}"></span></h3>${r.dishes.length > 1 ? `<button type="button" class="btn-sm danger" data-act="b-del" data-key="dishes" data-i="${i}">지우기</button>` : ''}</div>${bGrid(defs, 'dishes.' + i)}</div>`).join('')}</div>
+  <button type="button" class="add" data-act="b-add" data-key="dishes">+ 접시 더하기</button>`;
+}
+function bScores(r, detail) {
+  return `<div>${B_SCORES.map(([k, name, hint]) => `<div class="score-row">
+      <div class="score-top"><b>${name}</b><div class="dots" role="group" aria-label="${name} 점수">${[1, 2, 3, 4, 5].map(v => `<button type="button" data-act="b-score" data-k="${k}" data-val="${v}" aria-pressed="${r.wrap.scores[k] == v}" aria-label="${name} ${v}점">${v}</button>`).join('')}</div></div>
+      <small>${hint}</small>
+      ${detail ? `<input type="text" id="b-reason-${k}" data-bp="wrap.reasons.${k}" value="${esc(r.wrap.reasons[k] || '')}" placeholder="왜 그런지 한 줄" aria-label="${name} 점수 이유">` : ''}
+    </div>`).join('')}</div>
+  <div class="bavg"><span>평균 점수</span><output id="b-avg">—</output></div>`;
+}
+function bIdeas(r, defs) {
+  return `<div class="bstack">${r.ideas.map((d, i) => `<div class="bitem" data-key="ideas"><div class="bitem-h"><h3>아이디어 ${i + 1}</h3>${r.ideas.length > 1 ? `<button type="button" class="btn-sm danger" data-act="b-del" data-key="ideas" data-i="${i}">지우기</button>` : ''}</div>${bGrid(defs, 'ideas.' + i)}
+    <button type="button" class="btn fill" data-act="b-mk" data-i="${i}">이 아이디어로 레시피 만들기</button></div>`).join('')}</div>
+  <button type="button" class="add" data-act="b-add" data-key="ideas">+ 아이디어 더하기</button><datalist id="b-dishnames"></datalist>`;
+}
+function bSimpleBody(r) {
+  return bSec(1, 's1', '가게', '이름과 쓴 돈만 적어도 돼요', bGrid(pick(B_SECTIONS[0].fields, ['store', 'type', 'date', 'people', 'spent', 'perHead']), 'basic'))
+    + bSec(2, 's2', '먹은 메뉴', '접시마다 한 줄', bDishes(r, pick(B_DISH, ['name', 'price', 'w1'])))
+    + bSec(3, 's3', '점수', '눌러서 1~5점', bScores(r, false))
+    + bSec(4, 's4', '정리', '가져올 것 · 바꿀 것 · 피할 것', bGrid(B_THREE, 'wrap'))
+    + bSec(5, 's5', '레시피 아이디어', '우리 가게 메뉴로 옮길 생각', bIdeas(r, pick(B_IDEA, ['from', 'myway'])));
+}
+function bDetailBody(r) {
+  return B_SECTIONS.map(s => {
+    let inner;
+    if (s.list) inner = bDishes(r, B_DISH);
+    else if (s.special) inner = bScores(r, true) + bGrid(B_THREE, 'wrap')
+      + `<div class="bsub"><h3>레시피 아이디어</h3><p>레시피노트로 옮길 카드예요. 밑작업과 영업 조리를 나눠 미리 짐작해 둬요</p></div>` + bIdeas(r, B_IDEA);
+    else inner = bGrid(s.fields, s.id);
+    return bSec(s.no, s.id, s.title, s.hint, inner);
+  }).join('');
+}
+function viewBench() {
+  setTop('벤치마킹노트', false);
+  const list = db.bench.slice().sort((a, b) => (b.updatedAt || b.createdAt).localeCompare(a.updatedAt || a.createdAt));
+  const rows = list.map(r => {
+    const b = r.basic || {}, avg = bAvg(r), ph = bPerHead(r);
+    const day = b.date ? `${b.date.slice(5).replace('-', '.')} (${bDay(b.date)})` : '날짜 없음';
+    const cls = avg == null ? 'none' : avg >= 4 ? 'good' : avg >= 3 ? 'warn' : 'bad';
+    return `<button class="crow" data-act="b-open" data-id="${r.id}">
+      <div class="c-top"><span class="c-name">${esc(b.store || '이름 없는 가게')}</span><span class="chip ${cls}">${avg == null ? '점수 전' : avg + '점'}</span></div>
+      <div class="c-stats"><span><small>방문</small>${day}</span><span><small>1인 객단가</small>${ph ? won(ph) : '—'}</span><span><small>접시 · 아이디어</small>${r.dishes.filter(d => d.name).length} · ${r.ideas.filter(d => d.from || d.myway).length}</span></div>
+    </button>`;
+  }).join('');
+  return `<p class="lead">다녀온 가게를 기록하고, 가져올 점은 레시피 아이디어로 남겨 두세요.</p>
+  ${list.length ? `<div class="clist">${rows}</div>` : `<div class="empty">아직 기록한 가게가 없습니다.<br>아래 <b>새 보고서</b>로 시작하거나 예시를 먼저 보세요.<div style="margin-top:14px"><button class="btn" data-act="b-sample">예시 보고서 보기</button></div></div>`}
+  <details class="card" style="margin-top:18px"><summary class="flabel">다른 기기에서 옮겨 오기</summary>
+    <div style="display:grid;gap:10px;margin-top:10px">
+      <textarea id="b-imp" rows="3" placeholder='보고서 앱의 ‘레시피노트용 데이터’를 붙여넣으세요' aria-label="보고서 데이터 붙여넣기"></textarea>
+      <button class="btn" data-act="b-import">불러오기</button>
+    </div></details>`;
+}
+function viewBenchEdit() {
+  const r = bCur();
+  if (!r) { state.view = 'bench'; return viewBench(); }
+  const detail = db.settings.benchMode === 'detail';
+  setTop(r.basic.store || '새 보고서', true, '<button class="ghost" data-act="b-copy">글로 복사</button>');
+  return `<div class="bsticky">
+    <div class="bmode" role="group" aria-label="보고서 종류">
+      <button data-act="b-mode" data-m="simple" class="${detail ? '' : 'on'}" aria-pressed="${!detail}">간편 보고서</button>
+      <button data-act="b-mode" data-m="detail" class="${detail ? 'on' : ''}" aria-pressed="${detail}">상세 보고서</button>
+    </div>
+    ${detail ? `<nav class="bnav" aria-label="보고서 칸">${B_SECTIONS.map(s => `<button data-act="b-go" data-id="${s.id}"><b>${s.no}</b>${s.short}</button>`).join('')}</nav>` : ''}
+  </div>
+  <p class="hint" style="margin:0 0 12px">${detail ? '다음 날 30분, 사진과 음성 메모를 보며 위에서부터 채워요.' : '가게를 나오면서 1분이면 끝나요. 더 적고 싶으면 상세 보고서로 바꾸세요. 적은 내용은 그대로 이어집니다.'}</p>
+  <div class="bstack" style="gap:14px">${detail ? bDetailBody(r) : bSimpleBody(r)}</div>
+  <textarea id="b-export" rows="8" readonly hidden aria-label="보고서 글" style="margin-top:14px"></textarea>
+  <div class="actions" style="margin-top:18px"><button class="danger" data-act="b-delReport">이 보고서 삭제</button></div>
+  <p class="stamp">이 기기에 자동 저장됩니다</p>`;
+}
+function bRefresh() {
+  const r = bCur(); if (!r) return;
+  document.querySelectorAll('[data-bcalc]').forEach(o => { const [k, base] = o.dataset.bcalc.split(':'); o.textContent = BCALC[k](r, base); });
+  document.querySelectorAll('[data-bcook]').forEach(t => { const d = r.dishes[+t.dataset.bcook] || {}; const m = bmins(d.ordered, d.served); t.textContent = m == null ? '' : `조리 ${m}분`; });
+  const a = $('b-avg'); if (a) { const v = bAvg(r); a.textContent = v ? v + ' / 5' : '—'; }
+  const dl = $('b-dishnames'); if (dl) dl.innerHTML = r.dishes.filter(d => d.name).map(d => `<option value="${esc(d.name)}">`).join('');
+}
+
+/* 저장: 입력마다 0.4초 모아서 */
+let bSaveT = null;
+function bFlush() { if (bSaveT) { clearTimeout(bSaveT); bSaveT = null; if (!save()) toast('저장 공간이 가득 찼습니다. 메뉴 사진을 줄여 주세요.'); } }
+function bTouch() { const r = bCur(); if (r) r.updatedAt = new Date().toISOString(); clearTimeout(bSaveT); bSaveT = setTimeout(bFlush, 400); }
+window.addEventListener('pagehide', bFlush);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') bFlush(); });
+function bRerender() { const y = window.scrollY; render(); window.scrollTo(0, y); }
+
+/* 글로 내보내기 */
+function bText(r) {
+  const line = (l, v) => v ? `· ${l}: ${v}\n` : '';
+  const b = r.basic, m = r.menu, k = r.kitchen, g = r.guests, w = r.wrap;
+  let out = `[벤치마킹 보고서] ${b.store || '이름 없음'}\n`;
+  out += '\n1. 기본 정보\n' + line('동네·상권', b.area) + line('형태', b.type) + line('방문', (b.date || '') + ' ' + (b.enter || '') + (b.leave ? '~' + b.leave : ''))
+    + line('요일·머문 시간', BCALC.dayStay(r)) + line('인원·쓴 돈', (b.people ? b.people + '명' : '') + (b.spent ? ' · ' + won(bnum(b.spent)) : ''))
+    + line('1인 객단가', bPerHead(r) ? won(bPerHead(r)) : '') + line('같이 간 사람', b.companion)
+    + [b.q1, b.q2, b.q3].filter(Boolean).map((q, i) => `· 질문 ${i + 1}: ${q}\n`).join('');
+  out += '\n2. 첫인상\n' + line('문 앞', r.impression.door) + line('내 자리', r.impression.seat) + line('빛·소리·냄새', r.impression.senses);
+  out += '\n3. 메뉴판\n' + line('메뉴 수', m.count ? m.count + '개' : '') + line('갈래', m.groups) + line('가격', (m.min ? won(bnum(m.min)) : '') + (m.max ? ' ~ ' + won(bnum(m.max)) : ''))
+    + line('많은 가격대', m.common) + line('추천 표시', m.badge) + line('혼자 손님', m.solo) + line('더하기', m.addon) + line('바뀌는 칸', m.rotating);
+  out += '\n4. 접시 기록\n' + r.dishes.filter(d => d.name).map(d => {
+    const cm = bmins(d.ordered, d.served);
+    return `■ ${d.name}${d.price ? ` (${won(bnum(d.price))})` : ''}${cm != null ? ` · 조리 ${cm}분` : ''}\n`
+      + line('세 단어', [d.w1, d.w2, d.w3].filter(Boolean).join(' · ')) + line('양', d.portion) + line('온도', d.temp) + line('담음새', d.plating) + line('재료 짐작', d.guess) + line('한 단어', d.word);
+  }).join('');
+  out += '\n5. 주방과 운영\n' + line('밑작업 짐작', k.prep) + line('영업 조리', k.cook) + line('화구', k.burners ? k.burners + '개' : '') + line('운영 인원', k.staff ? k.staff + '명' : '')
+    + line('바빠 보인 손님 수', k.busyAt ? k.busyAt + '명' : '') + line('정리', k.cleanup);
+  out += '\n6. 손님과 돈\n' + line('손님 구성', g.mix) + line('나이대', g.age) + line('좌석·회전', (g.seats ? g.seats + '석' : '') + (g.turns ? ' × ' + g.turns + '바퀴' : ''))
+    + line('하루 손님 짐작', bDaily(r) ? bDaily(r) + '명' : '') + line('하루 매출 짐작', bDaily(r) && bPerHead(r) ? '약 ' + manwon(bDaily(r) * bPerHead(r)) : '')
+    + line('술', g.drinks) + line('사장의 말', g.talk) + line('마지막 인상', g.last);
+  out += '\n7. 정리\n' + B_SCORES.map(s => w.scores[s[0]] ? `· ${s[1]} ${w.scores[s[0]]}점${w.reasons[s[0]] ? ' — ' + w.reasons[s[0]] : ''}\n` : '').join('')
+    + (bAvg(r) ? `· 평균 ${bAvg(r)}점\n` : '') + line('가져올 것', w.keep) + line('바꿀 것', w.change) + line('피할 것', w.avoid);
+  const ideas = r.ideas.filter(d => d.from || d.myway);
+  if (ideas.length) out += '\n레시피 아이디어\n' + ideas.map((d, i) => `■ 아이디어 ${i + 1}${d.from ? ': ' + d.from : ''}\n`
+    + line('맛있었던 이유', d.why) + line('내 방식으로', d.myway) + line('예상 밑작업', d.prep) + line('예상 영업 조리', d.cook) + line('목표 시간', d.target ? d.target + '분' : '') + line('시험 결과', d.result)).join('');
+  return out.replace(/\n\d\. [^\n]+\n(?=\n|$)/g, '\n');   // 빈 칸 제목은 빼기
+}
+
+/* 동작 */
+function bNew(r) { db.bench.push(r); save(); state.tab = 'bench'; go('bench-edit', { bid: r.id }); }
+function benchClick(a, t) {
+  const r = bCur();
+  switch (a) {
+    case 'b-open': go('bench-edit', { bid: t.dataset.id }); break;
+    case 'b-sample': bNew(bSample()); toast('예시 보고서를 열었습니다'); break;
+    case 'b-mode': db.settings.benchMode = t.dataset.m; save(); go('bench-edit'); break;
+    case 'b-go': { const el = $('bs-' + t.dataset.id); if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); break; }
+    case 'b-chip': {
+      const p = t.dataset.path, v = t.dataset.val;
+      setP(r, p, getP(r, p) === v ? '' : v);
+      t.parentNode.querySelectorAll('.opt').forEach(x => x.setAttribute('aria-pressed', String(getP(r, p) === x.dataset.val)));
+      bTouch(); break;
+    }
+    case 'b-score': {
+      const k = t.dataset.k, v = +t.dataset.val;
+      r.wrap.scores[k] = r.wrap.scores[k] === v ? 0 : v;
+      t.parentNode.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(r.wrap.scores[k] == +x.dataset.val)));
+      bRefresh(); bTouch(); break;
+    }
+    case 'b-add': {
+      const key = t.dataset.key;
+      r[key].push(key === 'dishes' ? bBlankDish() : bBlankIdea()); bTouch(); bRerender();
+      const items = document.querySelectorAll(`.bitem[data-key="${key}"]`), last = items[items.length - 1];
+      const f = last && last.querySelector('input,textarea'); if (f) f.focus();
+      break;
+    }
+    case 'b-del': {
+      const key = t.dataset.key, i = +t.dataset.i;
+      ask(`${key === 'dishes' ? '접시' : '아이디어'} ${i + 1} 지우기`, '적어 둔 내용이 함께 지워집니다.', '지우기', () => { r[key].splice(i, 1); bTouch(); bRerender(); });
+      break;
+    }
+    case 'b-delReport':
+      ask(`'${r.basic.store || '이름 없는 보고서'}' 삭제`, '삭제한 보고서는 되돌릴 수 없습니다.', '삭제', () => {
+        db.bench = db.bench.filter(x => x.id !== r.id); bSaveT && clearTimeout(bSaveT); bSaveT = null; save(); go('bench'); toast('삭제했습니다');
+      });
+      break;
+    case 'b-copy': {
+      const text = bText(r), ta = $('b-export');
+      const fb = () => { ta.hidden = false; ta.value = text; ta.scrollIntoView({ block: 'center' }); ta.focus(); ta.select(); toast('아래 글을 길게 눌러 복사해 주세요'); };
+      try { navigator.clipboard.writeText(text).then(() => toast('보고서 글을 복사했습니다. 카톡이나 메모에 붙여넣으세요'), fb); } catch (e) { fb(); }
+      break;
+    }
+    case 'b-import': {
+      let data;
+      try { data = JSON.parse($('b-imp').value); } catch (e) { toast('보고서 데이터가 아닙니다. 복사한 내용을 통째로 붙여넣어 주세요.'); break; }
+      const arr = data && data.kind === 'benchmark-report' ? [data] : data && data.reports ? Object.values(data.reports) : Array.isArray(data) ? data : [];
+      const ok = arr.filter(x => x && x.kind === 'benchmark-report').map(bNormalize);
+      if (!ok.length) { toast('보고서 데이터가 아닙니다. 복사한 내용을 통째로 붙여넣어 주세요.'); break; }
+      ok.forEach(x => { if (db.bench.some(y => y.id === x.id)) x.id = buid(); db.bench.push(x); });
+      save(); go('bench'); toast(`보고서 ${ok.length}개를 불러왔습니다`);
+      break;
+    }
+    case 'b-mk': {
+      const d = r.ideas[+t.dataset.i];
+      if (!d.from && !d.myway) { toast('영감 받은 접시나 내 방식을 먼저 적어 주세요'); break; }
+      const split = s => String(s || '').split(/\n|,\s*/).map(x => x.trim()).filter(Boolean);
+      const nr = blank();
+      nr.name = (d.from || '').replace(/^\[예시\]\s*/, '');
+      nr.prepSteps = split(d.prep).length ? split(d.prep) : [''];
+      nr.serviceSteps = split(d.cook).length ? split(d.cook).map(x => st(x, '')) : [st('', '')];
+      nr.targetMin = d.target || '';
+      nr.memo = [`벤치마킹: ${r.basic.store || ''}${r.basic.date ? ` (${r.basic.date})` : ''}`, d.why && `맛있었던 이유: ${d.why}`, d.myway && `내 방식으로: ${d.myway}`].filter(Boolean).join('\n');
+      bFlush();
+      state.tab = 'list'; state.editFrom = null; state.draft = nr; go('edit');
+      toast('레시피 초안을 만들었습니다. 재료와 시간을 채우고 저장하세요');
+      break;
+    }
+  }
+}
+function benchInput(el) {
+  const r = bCur(); if (!r) return;
+  const p = el.dataset.bp;
+  setP(r, p, el.value); bRefresh(); bTouch();
+  if (p === 'basic.store') { const h = document.querySelector('.top-in h1'); if (h) h.textContent = el.value || '새 보고서'; }
 }
 
 /* ===== 4. 공통 UI ===== */
@@ -803,12 +1229,14 @@ function stopTimer() { state.timer = null; clearInterval(tick); }
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t) return;
   const a = t.dataset.act, d = state.draft;
+  if (a.startsWith('b-')) { benchClick(a, t); return; }
   switch (a) {
     case 'skipSplash': hideSplash(); break;
-    case 'tab': state.draft = null; state.tab = t.dataset.tab; state.q = ''; state.cat = '전체'; go(state.tab); break;
+    case 'tab': bFlush(); bPrune(); state.draft = null; state.tab = t.dataset.tab; state.q = ''; state.cat = '전체'; go(state.tab); break;
     case 'cat': state.cat = t.dataset.cat; render(); break;
     case 'open': openDetail(t.dataset.id); break;
     case 'back':
+      if (state.view === 'bench-edit') { bFlush(); bPrune(); go('bench'); break; }
       if (state.view === 'edit') { state.draft = null; state.editFrom ? go('detail', { id: state.editFrom }) : go(state.tab); }
       else go(state.tab);
       break;
@@ -818,7 +1246,7 @@ document.addEventListener('click', e => {
     case 'step': { const k = t.dataset.k; state.checked.has(k) ? state.checked.delete(k) : state.checked.add(k); render(); break; }
     case 'timerStart': startTimer(state.id); render(); break;
     case 'timerStop': stopTimer(); render(); toast('타이머를 멈췄습니다'); break;
-    case 'new': openEdit(null); break;
+    case 'new': if (state.tab === 'bench') bNew(bBlank()); else openEdit(null); break;
     case 'edit': openEdit(find(state.id)); break;
     case 'dup': { const r = find(state.id); const c = JSON.parse(JSON.stringify(r)); c.id = uid(); c.name = r.name + ' (복사)'; state.editFrom = null; state.draft = c; go('edit'); break; }
     case 'del': {
@@ -874,6 +1302,7 @@ document.addEventListener('submit', e => { e.preventDefault(); if (state.view ==
 document.addEventListener('input', e => {
   const el = e.target, ds = el.dataset;
   if (el.id === 'q') { state.q = el.value; $('list').innerHTML = listHTML(); return; }
+  if (ds.bp != null) { benchInput(el); return; }
   if (ds.set) { db.settings[ds.set] = ds.set === 'target' ? n(el.value) : el.value; save(); return; }
   const d = state.draft; if (!d) return;
   if (ds.f) d[ds.f] = el.value;
