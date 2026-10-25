@@ -330,6 +330,10 @@ details.card summary{cursor:pointer}
 .dp-btn svg{width:18px;height:18px}
 /* 첫 화면 설정 */
 .sp-prev{width:100%;max-width:200px;aspect-ratio:1/1;margin:0 auto;border-radius:12px;border:1px solid var(--line);background:#0B0606 var(--splash-default) center/contain no-repeat}
+.maker{display:grid;gap:6px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.maker b{font-size:14px}
+.maker p{margin:0;font-size:12.5px;color:var(--muted)}
+.maker .btn{text-decoration:none;color:var(--ink);margin-top:4px}
 .sp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .sp-row .btn{height:44px}
 input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
@@ -351,6 +355,8 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .rc-row input{padding:8px 8px;font-size:15px}
 .rc-row input.chk{border-color:var(--warn)}
 .rc-head span{font-size:11.5px;color:var(--muted)}
+.rc-raw summary{font-size:12.5px;color:var(--muted);cursor:pointer}
+.rc-raw pre{white-space:pre-wrap;word-break:break-all;font-family:var(--f-num);font-size:11.5px;color:var(--muted);background:var(--surface);border-radius:8px;padding:8px;margin:6px 0 0;max-height:240px;overflow:auto}
 .rc-check{margin:0;font-size:12.5px;color:var(--muted);display:grid;gap:2px}
 .rc-check .ok{color:var(--good)}
 .rc-check .no{color:var(--warn)}
@@ -892,7 +898,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.0 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.2 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1408,31 +1414,24 @@ async function buildPdf(r, detail) {
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     window.scrollTo(0, 0);
     const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
-    const PW = pdf.internal.pageSize.getWidth(), PH = pdf.internal.pageSize.getHeight(), M = 30, W = PW - M * 2;
-    let y = M; const pages = [[]];
-    const newPage = () => { pdf.addPage(); y = M; pages.push([]); };
-    const place = (u, h) => { pdf.addImage(u, 'JPEG', M, y, W, h); pages[pages.length - 1].push({ u, x: M, y, w: W, h }); y += h + 8; };
+    const PW = 595.28, M = 30, W = PW - M * 2, GAP = 8, MAXH = 14000;   // A4 폭, 길이는 내용만큼 (PDF 한 쪽 최대 길이까지)
+    const shots = [];
     for (const el of host.querySelectorAll('.pb')) {
       const c = await window.html2canvas(el, { scale: 2, backgroundColor: '#ffffff', logging: false });
-      const h = c.height * W / c.width;
-      if (h <= PH - 2 * M) {
-        if (y + h > PH - M) newPage();
-        place(c.toDataURL('image/jpeg', 0.86), h);
-      } else {
-        if (y > M) newPage();
-        const chunk = Math.floor((PH - 2 * M) * c.width / W);
-        for (let sy = 0; sy < c.height; sy += chunk) {
-          const sh = Math.min(chunk, c.height - sy), cc = document.createElement('canvas');
-          cc.width = c.width; cc.height = sh; cc.getContext('2d').drawImage(c, 0, sy, c.width, sh, 0, 0, c.width, sh);
-          if (sy > 0) newPage();
-          place(cc.toDataURL('image/jpeg', 0.86), sh * W / c.width);
-        }
-      }
+      shots.push({ u: c.toDataURL('image/jpeg', 0.86), h: c.height * W / c.width });
     }
-    const n = pdf.getNumberOfPages();
-    for (let i = 1; i <= n; i++) { pdf.setPage(i); pdf.setFontSize(8); pdf.setTextColor(150); pdf.text(`${i} / ${n}`, PW - M, PH - 14, { align: 'right' }); }
-    return { blob: pdf.output('blob'), pages, PW, PH };
+    const groups = [[]]; let acc = M;
+    shots.forEach(sh => { if (acc + sh.h + M > MAXH && groups[groups.length - 1].length) { groups.push([]); acc = M; } groups[groups.length - 1].push(sh); acc += sh.h + GAP; });
+    const pageH = g => M * 2 + g.reduce((a, sh) => a + sh.h + GAP, 0) - GAP;
+    const pdf = new jsPDF({ unit: 'pt', format: [PW, pageH(groups[0])], compress: true });
+    const pages = [];
+    groups.forEach((g, i) => {
+      const PH = pageH(g); if (i) pdf.addPage([PW, PH]);
+      let y = M; const items = [];
+      g.forEach(sh => { pdf.addImage(sh.u, 'JPEG', M, y, W, sh.h); items.push({ u: sh.u, x: M, y, w: W, h: sh.h }); y += sh.h + GAP; });
+      pages.push({ items, PH });
+    });
+    return { blob: pdf.output('blob'), pages, PW };
   } finally { host.remove(); window.scrollTo(0, y0); }
 }
 let pdfBusy = false;
@@ -1489,22 +1488,76 @@ async function ocrWorker() {
   }
   return ocrWorkerP;
 }
+/* 글자 인식용 이미지: ① 어두운 바닥을 잘라내 영수증만 남기고 ② 글자가 충분히 크게 확대 ③ 흑백·명암 보정 */
 async function ocrCanvas(pid) {
   const u = await photoURL(pid); if (!u) throw new Error('photo');
   const img = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = u; });
-  const k = Math.max(0.5, Math.min(2.5, 1600 / img.width));
-  const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, c.width, c.height);
-  // 흑백 + 명암 늘리기 (영수증 감열지 흐린 글씨 보정)
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  // ① 영수증 영역 찾기 (작게 줄여서 밝은 종이 부분의 가로·세로 범위)
+  let cx = 0, cy = 0, cw = iw, ch = ih;
+  try {
+    const ks = Math.min(1, 500 / Math.max(iw, ih)), sw = Math.max(1, Math.round(iw * ks)), sh = Math.max(1, Math.round(ih * ks));
+    const sc = document.createElement('canvas'); sc.width = sw; sc.height = sh;
+    const sg = sc.getContext('2d', { willReadFrequently: true }); sg.drawImage(img, 0, 0, sw, sh);
+    const sp = sg.getImageData(0, 0, sw, sh).data, lum = new Uint8Array(sw * sh), hist = new Uint32Array(256);
+    for (let i = 0, j = 0; i < sp.length; i += 4, j++) { const v = (sp[i] * 299 + sp[i + 1] * 587 + sp[i + 2] * 114) / 1000 | 0; lum[j] = v; hist[v]++; }
+    let sum = 0; for (let v = 0; v < 256; v++) sum += v * hist[v];
+    let sB = 0, wB = 0, best = 0, thr = 128;                       // Otsu
+    for (let v = 0; v < 256; v++) { wB += hist[v]; if (!wB) continue; const wF = lum.length - wB; if (!wF) break; sB += v * hist[v];
+      const mB = sB / wB, mF = (sum - sB) / wF, between = wB * wF * (mB - mF) * (mB - mF); if (between > best) { best = between; thr = v; } }
+    const colF = new Float32Array(sw), rowF = new Float32Array(sh);
+    for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) if (lum[y * sw + x] > thr) { colF[x]++; rowF[y]++; }
+    const span = (arr, n, lim) => { let a = -1, b = -1; for (let i = 0; i < arr.length; i++) if (arr[i] / n > lim) { if (a < 0) a = i; b = i; } return [a, b]; };
+    const [x0, x1] = span(colF, sh, 0.25), [y0, y1] = span(rowF, sw, 0.12);
+    if (x0 >= 0 && y0 >= 0) {
+      const area = ((x1 - x0 + 1) * (y1 - y0 + 1)) / (sw * sh);
+      if (area > 0.08 && area < 0.92) {
+        const m = 0.012;
+        cx = Math.max(0, (x0 / sw - m) * iw) | 0; cy = Math.max(0, (y0 / sh - m) * ih) | 0;
+        cw = Math.min(iw, ((x1 + 1) / sw + m) * iw) - cx | 0; ch = Math.min(ih, ((y1 + 1) / sh + m) * ih) - cy | 0;
+      }
+    }
+  } catch (e) {}
+  // ② 영수증 폭이 1800px 정도 되게 확대 (휴대폰 메모리 고려해 900만 화소까지)
+  let k = Math.max(0.6, Math.min(3, 1800 / cw));
+  k = Math.min(k, Math.sqrt(9e6 / (cw * ch)));
+  const c = document.createElement('canvas'); c.width = Math.round(cw * k); c.height = Math.round(ch * k);
+  const g = c.getContext('2d', { willReadFrequently: true }); g.imageSmoothingQuality = 'high';
+  g.drawImage(img, cx, cy, cw, ch, 0, 0, c.width, c.height);
+  // ③ 흑백 + 명암 늘리기
   const d = g.getImageData(0, 0, c.width, c.height), px = d.data, hist = new Uint32Array(256), lum = new Uint8ClampedArray(px.length / 4);
   for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = (px[i] * 299 + px[i + 1] * 587 + px[i + 2] * 114) / 1000 | 0; lum[j] = v; hist[v]++; }
   const total = lum.length; let lo = 0, hi = 255, acc = 0;
   for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc > total * 0.02) { lo = v; break; } }
   acc = 0; for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc > total * 0.02) { hi = v; break; } }
-  const span = Math.max(1, hi - lo);
-  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = Math.max(0, Math.min(255, (lum[j] - lo) * 255 / span)); px[i] = px[i + 1] = px[i + 2] = v; }
+  const span2 = Math.max(1, hi - lo);
+  for (let i = 0, j = 0; i < px.length; i += 4, j++) { const v = Math.max(0, Math.min(255, (lum[j] - lo) * 255 / span2)); px[i] = px[i + 1] = px[i + 2] = v; }
   g.putImageData(d, 0, 0);
   return c;
+}
+/* 그림자·조명 차이가 있을 때: 주변 밝기 기준 흑백 (Bradley 방식) */
+function binarize(src) {
+  const w = src.width, h = src.height, sg = src.getContext('2d', { willReadFrequently: true });
+  const id = sg.getImageData(0, 0, w, h), px = id.data, I = new Uint32Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) { let row = 0; for (let x = 0; x < w; x++) { row += px[(y * w + x) * 4]; I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + row; } }
+  const r = Math.max(8, Math.round(w / 24)), out = document.createElement('canvas'); out.width = w; out.height = h;
+  const og = out.getContext('2d'), od = og.createImageData(w, h), o = od.data;
+  for (let y = 0; y < h; y++) {
+    const ya = Math.max(0, y - r), yb = Math.min(h, y + r + 1);
+    for (let x = 0; x < w; x++) {
+      const xa = Math.max(0, x - r), xb = Math.min(w, x + r + 1), cnt = (xb - xa) * (yb - ya);
+      const s2 = I[yb * (w + 1) + xb] - I[ya * (w + 1) + xb] - I[yb * (w + 1) + xa] + I[ya * (w + 1) + xa];
+      const v = px[(y * w + x) * 4] * cnt < s2 * 0.85 ? 0 : 255, i = (y * w + x) * 4;
+      o[i] = o[i + 1] = o[i + 2] = v; o[i + 3] = 255;
+    }
+  }
+  og.putImageData(od, 0, 0); return out;
+}
+function rcJudge(p, conf) {
+  const hits = ['store', 'datetime', 'total'].filter(k => p[k]).length;
+  const sum = (p.items || []).reduce((a, x) => a + (+x.amount || 0), 0), match = !!p.total && sum === +p.total;
+  const ok = (match && hits >= 2) || (hits >= 2 && conf >= 55) || (hits === 3 && conf >= 45);
+  return { ok, match, score: hits * 25 + Math.min((p.items || []).length, 8) * 5 + (match ? 40 : 0) + conf * 0.5 };
 }
 const DRINK_RE = /(소주|맥주|참이슬|처음처럼|진로|새로|카스|테라|켈리|하이볼|콜라|사이다|음료|생수|막걸리|와인|사케|청하|하이트|토닉)/;
 function parseReceipt(lines) {
@@ -1514,7 +1567,7 @@ function parseReceipt(lines) {
   const nums = s => (String(s).match(/\d{1,3}(?:[,.]\d{3})+|\d{3,}/g) || []).map(x => +x.replace(/[,.]/g, ''));
   const TOTAL = /(합계금액|총합계|합계|총액|총금액|결제금액|받을금액|받은금액|청구금액|승인금액|판매총액|총결제|결제액)/;
   const NOT_TOTAL = /(수량|공급|부가|과세|면세|할인|봉사|거스름|잔액|포인트)/;
-  let headerAt = -1, endAt = L.length;
+  let headerAt = -1, endAt = L.length; const totals = [];
   L.forEach((l, i) => {
     const t = l.t, nt = t.replace(/\s/g, '');
     let m;
@@ -1537,7 +1590,7 @@ function parseReceipt(lines) {
     }
     if (headerAt < 0 && /(메뉴|품명|상품명?|품목|내역)/.test(nt) && /(수량|금액|단가|가격)/.test(nt)) headerAt = i;
     if (TOTAL.test(nt) && !NOT_TOTAL.test(nt)) {
-      const n = nums(t).filter(v => v >= 1000); if (n.length) set('total', String(n[n.length - 1]), l.c);
+      const n = nums(t).filter(v => v >= 1000); if (n.length) totals.push({ v: n[n.length - 1], c: l.c });
       if (i > headerAt && endAt === L.length) endAt = i;
     }
     if (/(부가세|부가가치세|VAT)/i.test(nt)) { const n = nums(t); if (n.length) set('vat', String(n[n.length - 1]), l.c); }
@@ -1545,12 +1598,12 @@ function parseReceipt(lines) {
   });
   if (!out.store) {   // 맨 위 몇 줄에서 가게 이름 추정
     const top = L.slice(0, 5).find(l => /[가-힣]{2,}/.test(l.t) && !/(영수증|매출|전표|고객|카드|사업자|주소|TEL|전화|일시|\d{2,}[-:]\d)/i.test(l.t) && l.t.replace(/\s/g, '').length <= 20);
-    if (top) set('store', top.t.replace(/[^\w가-힣\s&().·-]/g, ''), top.c);
+    if (top) set('store', top.t.replace(/[^\w가-힣\s&().·-]/g, '').replace(/^[\s()\[\].·-]+|[\s()\[\].·-]+$/g, ''), top.c);
   }
   // 메뉴 줄: "이름 수량 금액" 또는 "이름 단가 수량 금액" 또는 "이름 금액"
   for (let i = headerAt + 1; i < endAt; i++) {
     const l = L[i], t = l.t;
-    if (/(합계|소계|수량|금액|단가|공급|부가|과세|면세|할인|카드|승인|사업자|주소|전화|TEL|일시|POS|테이블|주문번호|=|--)/i.test(t.replace(/\s/g, ''))) continue;
+    if (/(합계|소계|수량|금액|단가|공급|부가|과세|면세|물품|가액|할인|카드|승인|사업자|주소|전화|TEL|일시|POS|테이블|주문번호|=|--)/i.test(t.replace(/\s/g, ''))) continue;
     let m = t.match(/^(.*?[가-힣A-Za-z].*?)\s+(?:([\d,.]{3,})\s+)?(\d{1,3})\s*(?:개|병|잔|인분|EA)?\s+([\d,.]{3,})$/i);
     let name, qty, amount;
     if (m) { name = m[1]; qty = +m[3]; amount = +m[4].replace(/[,.]/g, ''); }
@@ -1560,6 +1613,12 @@ function parseReceipt(lines) {
     if (!name || name.length > 24 || !(amount >= 100) || !(qty >= 1 && qty <= 99)) continue;
     out.items.push({ name, qty: String(qty), amount: String(amount), c: l.c });
   }
+  // 결제 금액: 합계·승인금액 줄이 여러 개면 메뉴 합계와 같은 값 → 없으면 가장 큰 값
+  if (totals.length) {
+    const sum = out.items.reduce((a, x) => a + +x.amount, 0);
+    const pickT = totals.find(x => x.v === sum) || totals.reduce((a, x) => (x.v > a.v ? x : a));
+    out.total = String(pickT.v); out.fc.total = pickT.c;
+  }
   return out;
 }
 function bBlankReceipt(photo) { return { id: buid(), photo, status: 'reading', conf: 0, fc: {}, store: '', address: '', datetime: '', total: '', vat: '', pay: '', bizno: '', tel: '', items: [], raw: '' }; }
@@ -1568,7 +1627,7 @@ async function benchReceipt(file) {
   const r = bCur(); if (!r) return;
   toast('영수증 사진을 저장하는 중…');
   try {
-    const blob = await resizeBlob(file, 2000, 0.88);
+    const blob = await resizeBlob(file, 3200, 0.92);
     const id = 'rc-' + buid(); await PhotoDB.put(id, blob);
     const rc = bBlankReceipt(id); r.receipts.push(rc); bTouch(); bRerender();
     readReceipt(r.id, rc.id);
@@ -1584,15 +1643,25 @@ async function readReceipt(rid, cid) {
       else if (/load|initializ/i.test(m.status || '')) upd('글자 인식 준비 중…');
     };
     const w = await ocrWorker();
-    await w.setParameters({ tessedit_pageseg_mode: '6', preserve_interword_spaces: '1' });
-    const canvas = await ocrCanvas(rc.photo);
-    const { data } = await w.recognize(canvas);
+    const base = await ocrCanvas(rc.photo);
+    const passes = [['gray', '6'], ['bin', '6'], ['gray', '4']];
+    let best = null;
+    for (let k = 0; k < passes.length; k++) {
+      const [mode, psm] = passes[k];
+      ocrProgress = m => {
+        if (m.status === 'recognizing text') upd(`읽는 중${k ? ` (다시 ${k}/${passes.length - 1})` : ''} ${Math.round((m.progress || 0) * 100)}%`);
+        else if (/load|initializ/i.test(m.status || '')) upd('글자 인식 준비 중…');
+      };
+      await w.setParameters({ tessedit_pageseg_mode: psm, preserve_interword_spaces: '1' });
+      const { data } = await w.recognize(mode === 'bin' ? binarize(base) : base);
+      const p = parseReceipt(data.lines || []), conf = Math.round(data.confidence || 0), j = rcJudge(p, conf);
+      if (!best || j.score > best.j.score) best = { p, conf, j, text: data.text };
+      if (j.ok && p.total && (j.match || (conf >= 75 && p.store && p.datetime))) break;   // 충분히 잘 읽었으면 그만
+    }
     rc = findReceipt(rid, cid); if (!rc) return;
-    const p = parseReceipt(data.lines || []);
-    Object.assign(rc, { fc: {}, store: '', address: '', datetime: '', total: '', vat: '', pay: '', bizno: '', tel: '', items: [] }, p);
-    rc.conf = Math.round(data.confidence || 0); rc.raw = String(data.text || '').slice(0, 4000);
-    const hits = ['store', 'datetime', 'total'].filter(k => rc[k]).length;
-    rc.status = rc.conf >= RC_OK && hits >= 2 ? 'ok' : 'low';
+    Object.assign(rc, { fc: {}, store: '', address: '', datetime: '', total: '', vat: '', pay: '', bizno: '', tel: '', items: [] }, best.p);
+    rc.conf = best.conf; rc.raw = String(best.text || '').slice(0, 4000);
+    rc.status = best.j.ok ? 'ok' : 'low';
   } catch (e) {
     rc = findReceipt(rid, cid); if (rc) rc.status = 'fail';
   } finally { ocrProgress = null; }
@@ -1625,8 +1694,9 @@ function rcHTML(rc, j) {
   if (rc.status === 'reading') body = '<p class="rc-msg">영수증 글자를 읽고 있어요. 처음 한 번은 글자 인식 자료(약 2MB)를 내려받습니다.</p>';
   else if (rc.status === 'fail') body = `<p class="rc-msg">${inFrame() ? '미리보기 화면에서는 영수증 읽기가 안 됩니다. 설치한 앱에서 다시 읽기를 눌러 주세요.' : '읽기에 실패했습니다. 처음 한 번은 인터넷 연결이 필요합니다. 연결을 확인하고 다시 읽기를 눌러 주세요.'}</p>
     <div class="rc-acts"><button type="button" class="btn" data-act="b-rcRead" data-j="${j}">다시 읽기</button></div>`;
-  else if (rc.status === 'low') body = `<p class="rc-msg">글씨를 정확히 읽지 못해 영수증 보고서를 만들지 않았습니다. 영수증을 평평하게 펴고, 그림자 없이 밝은 곳에서 글씨가 화면에 꽉 차게 다시 찍어 주세요.</p>
-    <div class="rc-acts"><button type="button" class="btn" data-act="b-rcRead" data-j="${j}">다시 읽기</button><button type="button" class="btn" data-act="b-rcForce" data-j="${j}">읽은 내용 그래도 보기</button></div>`;
+  else if (rc.status === 'low') body = `<p class="rc-msg">글씨를 정확히 읽지 못해 영수증 보고서를 만들지 않았습니다. 영수증을 평평하게 펴서 어두운 바닥 위에 놓고, 그림자 없이 영수증이 화면에 꽉 차게 다시 찍어 주세요.</p>
+    <div class="rc-acts"><button type="button" class="btn" data-act="b-rcRead" data-j="${j}">다시 읽기</button><button type="button" class="btn" data-act="b-rcForce" data-j="${j}">읽은 내용 그래도 보기</button></div>
+    ${rc.raw ? `<details class="rc-raw"><summary>읽은 글자 그대로 보기</summary><pre>${esc(rc.raw)}</pre></details>` : ''}`;
   else if (rc.status === 'ok') {
     const fields = RC_FIELDS.map(f => Object.assign({}, f, { label: f.label + (rc[f.k] && rc.fc && rc.fc[f.k] != null && rc.fc[f.k] < RC_FIELD_OK ? ' · 확인 필요' : '') }));
     body = `<div class="rc-report">
@@ -1689,14 +1759,14 @@ let pvFile = null;
 function closePreview() { const pv = $('pv'); if (pv) pv.remove(); document.body.style.overflow = ''; pvFile = null; }
 function openPreview(res, detail, name) {
   closePreview();
-  const { blob, pages, PW, PH } = res;
+  const { blob, pages, PW } = res;
   pvFile = new File([blob], name, { type: 'application/pdf' });
   const size = blob.size > 1048576 ? (blob.size / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(blob.size / 1024)) + 'KB';
   const pct = (v, t) => (v / t * 100).toFixed(3) + '%';
   const el = document.createElement('div');
   el.id = 'pv'; el.className = 'pv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'PDF 미리보기');
-  el.innerHTML = `<div class="pv-top"><div><b>PDF 미리보기</b><span>${detail ? '상세' : '간편'} 보고서 · ${pages.length}쪽 · ${size}</span></div><button class="pv-x" data-act="b-pvClose" aria-label="미리보기 닫기">×</button></div>
-    <div class="pv-body">${pages.map((pg, i) => `<div class="pv-page" style="aspect-ratio:${PW}/${PH}">${pg.map(p => `<img src="${p.u}" alt="" style="left:${pct(p.x, PW)};top:${pct(p.y, PH)};width:${pct(p.w, PW)}">`).join('')}<span class="pv-no">${i + 1} / ${pages.length}</span></div>`).join('')}
+  el.innerHTML = `<div class="pv-top"><div><b>PDF 미리보기</b><span>${detail ? '상세' : '간편'} 보고서 · ${pages.length > 1 ? pages.length + '장 · ' : '한 장으로 길게 · '}${size}</span></div><button class="pv-x" data-act="b-pvClose" aria-label="미리보기 닫기">×</button></div>
+    <div class="pv-body">${pages.map((pg, i) => `<div class="pv-page" style="aspect-ratio:${PW}/${pg.PH.toFixed(2)}">${pg.items.map(p => `<img src="${p.u}" alt="" style="left:${pct(p.x, PW)};top:${pct(p.y, pg.PH)};width:${pct(p.w, PW)}">`).join('')}${pages.length > 1 ? `<span class="pv-no">${i + 1} / ${pages.length}</span>` : ''}</div>`).join('')}
       <p class="pv-note">공유되는 PDF와 같은 모습입니다. 고칠 곳이 있으면 닫고 고친 뒤 다시 누르세요.</p></div>
     <div class="pv-bar"><button class="btn" data-act="b-pvClose">닫고 고치기</button><button class="btn fill" data-act="b-pvShare">카카오톡으로 공유</button></div>`;
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
@@ -1947,6 +2017,10 @@ function resizeImage(file, max = 900, q = 0.72) {
 }
 
 /* ===== 6. 시작 표지: 정한 시간만큼 보여 준 뒤 표지 넘김(0.95초) — 이미지·시간은 설정에서 ===== */
+/* 숨겨 둔 기능 — true로 바꾸면 설정에 다시 나타남 */
+const FEATURES = { customSplash: false };
+/* 첫 화면 변경 의뢰 연락처 (판매용으로 바꿀 때 여기만 고치면 됨) */
+const MAKER = { name: '비즈업컨설팅 문사무장', url: 'https://blog.naver.com/biznconsulting', note: '가게 표지·로고로 첫 화면을 만들어 드립니다.' };
 const SPLASH_KEY = 'seoyeonRecipeNote.splash';
 const HOLDS = [0, 1000, 1500, 2000], HOLD_LABEL = ['없음', '1초', '1.5초', '2초'];
 const SPLASH_INNER = '<div class="cast"></div><div class="leaf"><div class="face front"><div class="sp-bg"></div><div class="sp-img"></div><div class="shade"></div></div><div class="face back"></div></div>';
@@ -1985,23 +2059,31 @@ function replaySplash() {
   runSplash(sp, c.hold || 1000, c.custom);
 }
 function splashHTML() {
-  const c = splashCfg(), i = HOLDS.indexOf(c.hold);
-  return `<section class="card" id="splash-card">
-    <h2 style="font-size:16px">첫 화면</h2>
-    <div class="sp-prev" id="sp-prev" role="img" aria-label="첫 화면 이미지"></div>
+  const c = splashCfg(), i = HOLDS.indexOf(c.hold), custom = FEATURES.customSplash;
+  const imageTools = custom ? `
     <p class="help" style="margin:0;text-align:center">${c.custom ? '직접 넣은 이미지' : '기본 이미지 (붉은달빛주점 표지)'}</p>
     <div class="sp-row">
       <label class="btn" for="splash-file">이미지 바꾸기</label>
       ${c.custom ? '<button class="btn" data-act="splashReset">기본으로 되돌리기</button>' : '<button class="btn" data-act="splashPlay">첫 화면 미리 보기</button>'}
     </div>
     ${c.custom ? '<button class="btn" data-act="splashPlay">첫 화면 미리 보기</button>' : ''}
-    <input class="vh" type="file" id="splash-file" accept="image/*">
+    <input class="vh" type="file" id="splash-file" accept="image/*">` : `
+    <button class="btn" data-act="splashPlay">첫 화면 미리 보기</button>
+    <div class="maker">
+      <b>첫 화면 이미지를 바꾸고 싶으신가요?</b>
+      <p>${esc(MAKER.note)} 아래로 의뢰해 주세요.</p>
+      <a class="btn" href="${esc(MAKER.url)}" target="_blank" rel="noopener">${esc(MAKER.name)}에게 의뢰하기</a>
+    </div>`;
+  return `<section class="card" id="splash-card">
+    <h2 style="font-size:16px">첫 화면</h2>
+    <div class="sp-prev" id="sp-prev" role="img" aria-label="첫 화면 이미지"></div>
+    ${imageTools}
     <div class="field">
       <label for="set-hold">표지를 넘기기 전 보여 주는 시간 · <span class="hold-now" id="hold-now">${HOLD_LABEL[i]}</span></label>
       <input type="range" id="set-hold" min="0" max="3" step="1" value="${i}" aria-valuetext="${HOLD_LABEL[i]}">
       <div class="range-labels" id="hold-labels">${HOLD_LABEL.map((l, k) => `<span class="${k === i ? 'on' : ''}">${l}</span>`).join('')}</div>
     </div>
-    <p class="help" style="margin:0">'없음'으로 하면 앱을 켤 때 표지 없이 바로 시작합니다. 이미지는 세로로 긴 사진도 잘리지 않고 가운데에 맞춰 보여요.</p>
+    <p class="help" style="margin:0">'없음'으로 하면 앱을 켤 때 표지 없이 바로 시작합니다.</p>
   </section>`;
 }
 function hydrateSplashPrev() {
