@@ -1,5 +1,5 @@
 // 서연이의 레시피노트 — 오프라인 실행용. 앱을 고치면 VERSION 숫자를 올리세요.
-const VERSION = 'recipe-note-v23';
+const VERSION = 'recipe-note-v26';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {

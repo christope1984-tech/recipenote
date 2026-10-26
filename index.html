@@ -383,6 +383,12 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .rc-check .ok{color:var(--good)}
 .rc-check .no{color:var(--warn)}
 /* PDF 미리보기 */
+.pv-segw{padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:var(--bg)}
+.pv-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;max-width:620px;margin:0 auto}
+.pv-seg button{border:0;background:none;border-radius:9px;padding:6px 4px;display:grid;font-weight:700;color:var(--muted);line-height:1.3}
+.pv-seg button small{font-size:11px;font-weight:500;opacity:.85}
+.pv-seg button.on{background:var(--accent);color:var(--accent-ink)}
+.pv.mob .pv-page{max-width:440px}
 .pv{position:fixed;inset:0;z-index:40;background:#0B0606;display:flex;flex-direction:column}
 .pv-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--bg)}
 .pv-top b{display:block;font-size:16px}
@@ -482,6 +488,58 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .r-why{color:var(--rm);margin-top:4px!important}
 .r-my{margin:10px 0;background:#FBF3E3;border-radius:10px;padding:10px 14px;font-weight:500}
 .r-my span{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--rg);margin-bottom:2px}
+.r-sum{margin-top:12px;background:var(--rw);border:1px solid var(--rr);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.s-row{display:grid;gap:2px;padding-top:10px;border-top:1px dashed var(--rr)}
+.r-sum .r-lbl+.s-row{border-top:0;padding-top:0}
+.s-ideas i{background:var(--rg)}.s-ideas .r-tl{color:var(--rg)}
+.s-ideas p{display:flex;flex-wrap:wrap;gap:6px}
+.s-ideas p span{background:#FBF3E3;border-radius:999px;padding:2px 10px;font-weight:700;font-size:.92em}
+/* 모바일형: 휴대폰 폭 한 줄 배치, 글자 크게 */
+.pdf-host.m{width:400px;font-size:15.5px;line-height:1.62}
+.m .r-lbl{font-size:12.5px}
+.m .r-cover{padding:24px 22px 18px;border-radius:16px}
+.m .r-ctop{letter-spacing:.18em;font-size:11.5px}
+.m .r-title{font-size:30px;margin:16px 0 8px}
+.m .r-meta{font-size:13.5px;gap:4px 10px}
+.m .m-meta{flex-direction:column;align-items:flex-start;gap:2px}
+.m .r-cfoot{flex-direction:column;gap:2px;font-size:11.5px}
+.m .r-kpis{grid-template-columns:1fr 1fr;gap:8px}
+.m .r-kpi b{font-size:22px}
+.m .r-kpi.main b{font-size:28px}
+.m .r-kpi .k-l,.m .r-kpi .k-s{font-size:12px}
+.m .r-q{font-size:15px}
+.m .r-sh{margin:24px 0 10px;flex-wrap:wrap}
+.m .r-sno{font-size:22px}
+.m .r-sh h2{font-size:21px}
+.m .r-ssub{margin-left:0;flex-basis:100%;font-size:12.5px}
+.m .r-kv{grid-template-columns:minmax(0,1fr);gap:0;font-size:15px}
+.m .r-kv dt{font-size:12.5px;margin-top:8px}
+.m .r-kv dt:first-child{margin-top:0}
+.m .r-imp,.m .r-split,.m .r-three{grid-template-columns:minmax(0,1fr)}
+.m .r-stats b{font-size:17px}
+.m .r-stats span{font-size:12px}
+.m .r-dish{grid-template-columns:minmax(0,1fr);gap:12px;padding:10px}
+.m .r-dph{width:100%;height:285px}
+.m .r-dbody{padding:2px 6px 6px}
+.m .r-dname{font-size:23px}
+.m .r-chips span{font-size:13px;padding:3px 11px}
+.m .r-words span{font-size:15px}
+.m .r-quote{font-size:13px}
+.m .r-quote b{font-size:18px}
+.m .r-score{grid-template-columns:minmax(0,1fr);gap:14px;padding:18px 16px}
+.m .r-ring{margin:0 auto;width:120px;height:120px}
+.m .r-srow{grid-template-columns:minmax(0,1fr) 24px;grid-template-areas:"n s" "b b" "e e";gap:4px 8px;padding:8px 0}
+.m .r-srow>span:first-child{grid-area:n;font-weight:700}
+.m .r-srow .r-bar{grid-area:b}
+.m .r-srow b{grid-area:s;font-size:18px}
+.m .r-srow em{grid-area:e;font-size:13.5px}
+.m .r-bar i{height:12px}
+.m .r-tl{font-size:13.5px}
+.m .r-ititle{font-size:21px}
+.m .r-my span{font-size:12px}
+.m .p-rcs{grid-template-columns:minmax(0,1fr)}
+.m .p-rcbig{height:620px}
+.m .r-foot{flex-direction:column;gap:2px;font-size:12px}
 .r-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:10px;border-top:1px solid var(--rg);font-size:11px;color:var(--rm)}
 .r-foot b{font-family:var(--rf);font-size:14px;color:var(--rc)}
 .p-rcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -1001,7 +1059,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.7 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.8 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1367,6 +1425,7 @@ function benchClick(a, t) {
       break;
     case 'b-pdf': sharePdf(r); break;
     case 'b-pvClose': closePreview(); break;
+    case 'b-pvLayout': pvSwitch(t.dataset.l); break;
     case 'b-pvShare': pvShare(); break;
     case 'b-rcDel': {
       const j = +t.dataset.j;
@@ -1500,7 +1559,16 @@ async function pdfLibs() {
   if (!window.jspdf) await loadScript(PDF_LIBS[0]);
   if (!window.html2canvas) await loadScript(PDF_LIBS[1]);
 }
-function pdfHTML(r, detail) {
+function mobileSummary(r) {     // 모바일형 첫 화면: 핵심만 한눈에
+  const w = r.wrap, ideas = r.ideas.filter(d => d.from || d.myway);
+  const rows = [['keep', '가져올 것'], ['change', '바꿀 것'], ['avoid', '피할 것']].filter(([k]) => w[k]);
+  if (!rows.length && !ideas.length) return '';
+  return `<div class="r-sum"><span class="r-lbl">한눈에 보기</span>
+    ${rows.map(([k, l]) => `<div class="s-row t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}
+    ${ideas.length ? `<div class="s-row s-ideas"><span class="r-tl"><i></i>레시피 아이디어</span><p>${ideas.map(d => `<span>${esc(d.from || d.myway)}</span>`).join('')}</p></div>` : ''}
+  </div>`;
+}
+function pdfHTML(r, detail, mobile) {
   const b = r.basic, w = r.wrap, avg = bAvg(r), ph = bPerHead(r), stay = bmins(b.enter, b.leave);
   const dishes = r.dishes.filter(d => d.name || d.photo);
   const store = (b.store || '이름 없는 가게');
@@ -1512,12 +1580,14 @@ function pdfHTML(r, detail) {
   const avgCook = cooks.length ? Math.round(cooks.reduce((a, x) => a + x, 0) / cooks.length) : null;
   const metaBits = [b.date && `${b.date.replace(/-/g, '. ')} (${bDay(b.date)})`, b.enter && `${b.enter}${b.leave ? '–' + b.leave : ''}`, b.type, b.area].filter(Boolean);
   const round = avg ? Math.round(+avg) : 0;
+  const statsHTML = list => { const c = mobile ? (list.length <= 3 ? list.length : 2) : 4; return list.length ? `<div class="r-stats" style="grid-template-columns:repeat(${c},minmax(0,1fr))">${list.map(([a, v]) => `<div><span>${a}</span><b>${esc(v)}</b></div>`).join('')}</div>` : ''; };
 
   /* 표지 */
   let html = `<div class="pb"><div class="r-cover">
       <div class="r-ctop"><span>벤치마킹 리포트</span><span class="r-badge">${detail ? '상세 보고서' : '간편 보고서'}</span></div>
       <div class="r-title">${esc(store)}</div>
-      ${metaBits.length ? `<div class="r-meta">${metaBits.map(x => `<span>${esc(x)}</span>`).join('<i></i>')}</div>` : ''}
+      ${mobile ? `<div class="r-meta m-meta">${[[b.date && `${b.date.replace(/-/g, '. ')} (${bDay(b.date)})`, b.enter && `${b.enter}${b.leave ? '–' + b.leave : ''}`], [b.type, b.area]].map(g => g.filter(Boolean).join(' · ')).filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('')}</div>`
+        : metaBits.length ? `<div class="r-meta">${metaBits.map(x => `<span>${esc(x)}</span>`).join('<i></i>')}</div>` : ''}
       <div class="r-rule"></div>
       <div class="r-cfoot"><span>${esc(db.settings.shop || '')}${db.settings.shop ? ' · ' : ''}서연이의 레시피노트</span><span>작성 ${today().replace(/-/g, '. ')}</span></div>
     </div>
@@ -1527,6 +1597,7 @@ function pdfHTML(r, detail) {
       <div class="r-kpi"><span class="k-l">머문 시간</span><b>${stay != null ? bStay(stay) : '—'}</b><span class="k-s">${b.date ? bDay(b.date) + '요일' : '&nbsp;'}</span></div>
       <div class="r-kpi"><span class="k-l">먹은 접시</span><b>${dishes.length}접시</b><span class="k-s">${avgCook != null ? `평균 조리 ${avgCook}분` : '&nbsp;'}</span></div>
     </div>
+    ${mobile ? mobileSummary(r) : ''}
     ${detail && (b.q1 || b.q2 || b.q3) ? `<div class="r-q"><span class="r-lbl">오늘의 질문</span><ol>${[b.q1, b.q2, b.q3].filter(Boolean).map(q => `<li>${esc(q)}</li>`).join('')}</ol>${b.companion ? `<span class="r-qc">함께 간 사람 · ${esc(b.companion)}</span>` : ''}</div>` : ''}
   </div>`;
 
@@ -1536,7 +1607,7 @@ function pdfHTML(r, detail) {
     const imp = [['문 앞', im.door], ['내 자리', im.seat], ['빛 · 소리 · 냄새', im.senses]].filter(x => x[1]);
     html += sec('첫인상', '문 앞에서 내 자리까지', imp.length ? `<div class="r-imp">${imp.map(([k, v]) => `<div><span class="r-lbl">${k}</span><p>${esc(v)}</p></div>`).join('')}</div>` : '');
     const mStats = [['메뉴 수', m.count && m.count + '개'], ['가격 범위', (m.min ? won(bnum(m.min)) : '') + (m.max ? ' ~ ' + won(bnum(m.max)) : '')], ['많은 가격대', m.common], ['혼자 손님', m.solo]].filter(x => x[1]);
-    const mInner = (mStats.length ? `<div class="r-stats">${mStats.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+    const mInner = statsHTML(mStats)
       + kv([['갈래', m.groups], ['추천 표시', m.badge], ['더하기 옵션', m.addon], ['바뀌는 칸', m.rotating]]);
     html += sec('메뉴판', '주문하며 본 것', mInner && `<div class="r-card">${mInner}</div>`);
   }
@@ -1566,11 +1637,11 @@ function pdfHTML(r, detail) {
     const k = r.kitchen, g = r.guests, dg = bDaily(r);
     const kStats = [['화구', k.burners && k.burners + '개'], ['운영 인원', k.staff && k.staff + '명'], ['바빠진 시점', k.busyAt && '손님 ' + k.busyAt + '명']].filter(x => x[1]);
     const kInner = ((k.prep || k.cook) ? `<div class="r-split">${k.prep ? `<div class="sp-prep"><span class="r-lbl">장사 전 밑작업 (짐작)</span><p>${esc(k.prep)}</p></div>` : ''}${k.cook ? `<div class="sp-cook"><span class="r-lbl">주문 후 조리</span><p>${esc(k.cook)}</p></div>` : ''}</div>` : '')
-      + (kStats.length ? `<div class="r-stats">${kStats.map(([a, v]) => `<div><span>${a}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+      + statsHTML(kStats)
       + kv([['정리·설거지', k.cleanup]]);
     html += sec('주방과 운영', '밑작업과 주문 후 조리', kInner);
     const gStats = [['좌석', g.seats && g.seats + '석'], ['자리 회전', g.turns && g.turns + '바퀴'], ['하루 손님', dg && '약 ' + dg + '명'], ['하루 매출', dg && ph ? '약 ' + manwon(dg * ph) : '']].filter(x => x[1]);
-    const gInner = (gStats.length ? `<div class="r-stats">${gStats.map(([a, v]) => `<div><span>${a}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+    const gInner = statsHTML(gStats)
       + kv([['손님 구성', g.mix], ['나이대', g.age], ['술', g.drinks], ['사장의 말', g.talk], ['마지막 인상', g.last]]);
     html += sec('손님과 돈', '모두 짐작값 · 비교용', gInner && `<div class="r-card">${gInner}</div>`);
   }
@@ -1584,7 +1655,7 @@ function pdfHTML(r, detail) {
 
   /* 정리 */
   const three = [['keep', '가져올 것'], ['change', '바꿀 것'], ['avoid', '피할 것']].filter(([k]) => w[k]);
-  if (three.length) html += sec('정리', '우리 가게에 적용할 점', `<div class="r-three">${three.map(([k, l]) => `<div class="t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}</div>`);
+  if (three.length && !mobile) html += sec('정리', '우리 가게에 적용할 점', `<div class="r-three">${three.map(([k, l]) => `<div class="t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}</div>`);
 
   /* 레시피 아이디어 */
   r.ideas.filter(d => d.from || d.myway).forEach((d, i, arr) => {
@@ -1614,9 +1685,10 @@ function pdfHTML(r, detail) {
   html += `<div class="pb"><div class="r-foot"><b>${esc(store)}</b><span>${detail ? '상세' : '간편'} 보고서 · 서연이의 레시피노트 · ${today().replace(/-/g, '. ')}</span></div></div>`;
   return html;
 }
-async function buildPdf(r, detail) {
+async function buildPdf(r, detail, layout) {
   await pdfLibs();
-  const host = document.createElement('div'); host.className = 'pdf-host'; host.innerHTML = pdfHTML(r, detail);
+  const mobile = layout !== 'pc';
+  const host = document.createElement('div'); host.className = 'pdf-host' + (mobile ? ' m' : ''); host.innerHTML = pdfHTML(r, detail, mobile);
   document.body.appendChild(host);
   const y0 = window.scrollY;
   try {
@@ -1629,10 +1701,11 @@ async function buildPdf(r, detail) {
     if (document.fonts) { await Promise.all(['700 30px "Noto Serif KR"', '600 16px "Noto Serif KR"', '500 14px "IBM Plex Sans KR"', '700 14px "IBM Plex Sans KR"', '500 14px "IBM Plex Mono"'].map(f => document.fonts.load(f).catch(() => {}))); await document.fonts.ready; }
     window.scrollTo(0, 0);
     const { jsPDF } = window.jspdf;
-    const PW = 595.28, M = 30, W = PW - M * 2, GAP = 8, MAXH = 14000;   // A4 폭, 길이는 내용만큼 (PDF 한 쪽 최대 길이까지)
+    // PC형: A4 폭 / 모바일형: 휴대폰 화면 폭(글자가 확대 없이 읽히는 크기). 길이는 내용만큼 (PDF 한 쪽 최대 길이까지)
+    const PW = mobile ? 420 : 595.28, M = mobile ? 10 : 30, W = PW - M * 2, GAP = mobile ? 10 : 8, MAXH = 14000;
     const shots = [];
     for (const el of host.querySelectorAll('.pb')) {
-      const c = await window.html2canvas(el, { scale: 2, backgroundColor: '#FBF8F3', logging: false });
+      const c = await window.html2canvas(el, { scale: mobile ? 2.6 : 2, backgroundColor: '#FBF8F3', logging: false });
       shots.push({ u: c.toDataURL('image/jpeg', 0.86), h: c.height * W / c.width });
     }
     const groups = [[]]; let acc = M;
@@ -1651,15 +1724,31 @@ async function buildPdf(r, detail) {
   } finally { host.remove(); window.scrollTo(0, y0); }
 }
 let pdfBusy = false;
+let pvState = null;   // { r, detail, cache: { mobile, pc } }
+function pdfName(r, layout) {
+  const safe = (r.basic.store || '보고서').replace(/^\[예시\]\s*/, '').replace(/[\\/:*?"<>|\s]+/g, '_');
+  return `벤치마킹_${safe}${r.basic.date ? '_' + r.basic.date : ''}_${layout === 'pc' ? 'PC' : '모바일'}.pdf`;
+}
 function sharePdf(r) {
   if (pdfBusy) return;
   pdfBusy = true; bFlush();
-  const detail = r.mode === 'detail';
+  const detail = r.mode === 'detail', layout = db.settings.pdfLayout === 'pc' ? 'pc' : 'mobile';
   toast('PDF 미리보기를 만드는 중…');
-  buildPdf(r, detail).then(res => {
-    const safe = (r.basic.store || '보고서').replace(/^\[예시\]\s*/, '').replace(/[\\/:*?"<>|\s]+/g, '_');
-    openPreview(res, detail, `벤치마킹_${safe}${r.basic.date ? '_' + r.basic.date : ''}.pdf`);
+  buildPdf(r, detail, layout).then(res => {
+    pvState = { r, detail, cache: { [layout]: res } };
+    openPreview(layout);
   }).catch(() => toast('PDF를 만들지 못했습니다. 처음 한 번은 인터넷 연결이 필요합니다.')).finally(() => { pdfBusy = false; });
+}
+function pvSwitch(layout) {
+  if (!pvState || pdfBusy) return;
+  db.settings.pdfLayout = layout; save();
+  if (pvState.cache[layout]) { openPreview(layout); return; }
+  pdfBusy = true;
+  const body = document.querySelector('#pv .pv-body');
+  if (body) body.innerHTML = '<p class="pv-note" style="padding-top:40px">PDF를 만드는 중…</p>';
+  document.querySelectorAll('#pv .pv-seg button').forEach(b => b.classList.toggle('on', b.dataset.l === layout));
+  buildPdf(pvState.r, pvState.detail, layout).then(res => { pvState.cache[layout] = res; openPreview(layout); })
+    .catch(() => toast('PDF를 만들지 못했습니다.')).finally(() => { pdfBusy = false; });
 }
 
 /* 백업에 접시 사진 넣기 / 복원 */
@@ -1979,21 +2068,28 @@ function rcFill(r, rc) {
 
 /* ===== PDF 미리보기 ===== */
 let pvFile = null;
-function closePreview() { const pv = $('pv'); if (pv) pv.remove(); document.body.style.overflow = ''; pvFile = null; }
-function openPreview(res, detail, name) {
-  closePreview();
+function closePreview() { const pv = $('pv'); if (pv) pv.remove(); document.body.style.overflow = ''; pvFile = null; pvState = null; }
+function openPreview(layout) {
+  const st = pvState; if (!st) return;
+  const res = st.cache[layout], detail = st.detail, name = pdfName(st.r, layout);
+  const keepScroll = $('pv') ? 0 : null;
+  if ($('pv')) $('pv').remove();
   const { blob, pages, PW } = res;
   pvFile = new File([blob], name, { type: 'application/pdf' });
   const size = blob.size > 1048576 ? (blob.size / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(blob.size / 1024)) + 'KB';
   const pct = (v, t) => (v / t * 100).toFixed(3) + '%';
   const el = document.createElement('div');
-  el.id = 'pv'; el.className = 'pv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'PDF 미리보기');
-  el.innerHTML = `<div class="pv-top"><div><b>PDF 미리보기</b><span>${detail ? '상세' : '간편'} 보고서 · ${pages.length > 1 ? pages.length + '장 · ' : '한 장으로 길게 · '}${size}</span></div><button class="pv-x" data-act="b-pvClose" aria-label="미리보기 닫기">×</button></div>
+  el.id = 'pv'; el.className = 'pv' + (layout === 'pc' ? '' : ' mob'); el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'PDF 미리보기');
+  el.innerHTML = `<div class="pv-top"><div><b>PDF 미리보기</b><span>${detail ? '상세' : '간편'} 보고서 · ${layout === 'pc' ? 'PC형' : '모바일형'} · ${pages.length > 1 ? pages.length + '장 · ' : ''}${size}</span></div><button class="pv-x" data-act="b-pvClose" aria-label="미리보기 닫기">×</button></div>
+    <div class="pv-segw"><div class="pv-seg" role="group" aria-label="PDF 형태">
+      <button data-act="b-pvLayout" data-l="mobile" class="${layout === 'pc' ? '' : 'on'}" aria-pressed="${layout !== 'pc'}">모바일형<small>휴대폰으로 볼 때</small></button>
+      <button data-act="b-pvLayout" data-l="pc" class="${layout === 'pc' ? 'on' : ''}" aria-pressed="${layout === 'pc'}">PC형<small>A4 · 인쇄·PC용</small></button>
+    </div></div>
     <div class="pv-body">${pages.map((pg, i) => `<div class="pv-page" style="aspect-ratio:${PW}/${pg.PH.toFixed(2)}">${pg.items.map(p => `<img src="${p.u}" alt="" style="left:${pct(p.x, PW)};top:${pct(p.y, pg.PH)};width:${pct(p.w, PW)}">`).join('')}${pages.length > 1 ? `<span class="pv-no">${i + 1} / ${pages.length}</span>` : ''}</div>`).join('')}
       <p class="pv-note">공유되는 PDF와 같은 모습입니다. 고칠 곳이 있으면 닫고 고친 뒤 다시 누르세요.</p></div>
     <div class="pv-bar"><button class="btn" data-act="b-pvClose">닫고 고치기</button><button class="btn fill" data-act="b-pvShare">카카오톡으로 공유</button></div>`;
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
-  el.querySelector('.pv-x').focus();
+  if (keepScroll === null) el.querySelector('.pv-x').focus();
 }
 function pvShare() {
   const f = pvFile; if (!f) return;
