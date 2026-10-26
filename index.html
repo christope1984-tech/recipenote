@@ -17,7 +17,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap">
 <style>
 /* Layout: 시작 표지(페이드) → 메뉴 목록 → 메뉴 안에서 '장사 전 밑작업' / '주문 후 조리' 두 단계. 붉은달빛주점 다홍·금빛 */
 :root{
@@ -394,41 +394,96 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .pv-no{position:absolute;right:5%;bottom:1.2%;font-size:10px;color:#999}
 .pv-note{margin:0;font-size:12.5px;color:var(--muted);text-align:center;max-width:620px}
 .pv-bar{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--bg)}
-/* PDF용 종이 (화면 밖에서 그려서 PDF로) — 인쇄용이라 밝은 종이 한 가지 */
-.pdf-host{position:absolute;left:-12000px;top:0;width:720px;background:#FFFFFF;color:#1E1515;font-family:var(--f-body);font-size:14px;line-height:1.55;word-break:keep-all}
-.pdf-host .pb{background:#FFFFFF;padding-bottom:2px}
-.p-band{background:#2A0B0C;color:#F0E6E3;border-radius:10px;padding:20px 22px}
-.p-eye{font-size:11.5px;letter-spacing:.12em;color:#D7B061;font-weight:700}
-.p-title{font-size:28px;font-weight:700;line-height:1.3;margin:4px 0 2px}
-.p-meta{font-size:13px;color:#D9C9C4}
-.p-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
-.p-stats div{background:#F7F0EC;border-radius:8px;padding:10px 12px}
-.p-stats b{display:block;font-family:var(--f-num);font-size:19px;color:#9C2328}
-.p-stats span{font-size:11.5px;color:#6C5E5C}
-.ps{font-size:16px;font-weight:700;color:#9C2328;border-bottom:2px solid #9C2328;padding-bottom:4px;margin:14px 0 10px}
-.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:5px 12px;margin:6px 0 0;font-size:13.5px}
-.kv dt{color:#6C5E5C}
-.kv dd{margin:0}
-.p-dish{display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;border:1px solid #E6DCD9;border-radius:10px;padding:10px}
-.p-dish.nophoto{grid-template-columns:minmax(0,1fr)}
-.p-photo{width:270px;height:202px;border-radius:8px;background:#EEE6E3 center/cover no-repeat}
-.p-dno{font-size:11.5px;color:#6C5E5C;font-weight:700;letter-spacing:.06em}
-.p-dname{font-size:17px;font-weight:700}
-.p-dsub{font-family:var(--f-num);font-size:13px;color:#9C2328;margin-top:2px}
-.p-scores{display:grid;gap:8px}
-.p-srow{display:grid;grid-template-columns:110px 200px 30px minmax(0,1fr);gap:12px;align-items:center;font-size:14px}
-.p-bar{display:flex;gap:4px}
-.p-bar i{flex:1;height:12px;border-radius:3px;background:#EEE3E0}
-.p-bar i.on{background:#9C2328}
-.p-srow b{font-family:var(--f-num);color:#9C2328}
-.p-srow em{font-style:normal;font-size:12.5px;color:#6C5E5C}
-.p-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.p-three div{border-radius:8px;padding:10px 12px;background:#F7F0EC}
-.p-three b{font-size:13px}
-.p-three p{margin:4px 0 0;font-size:13.5px}
-.t-keep b{color:#23794A}.t-change b{color:#A86A12}.t-avoid b{color:#C2410C}
-.p-idea{border-left:4px solid #D7B061;background:#FBF6EC;border-radius:0 8px 8px 0;padding:10px 14px}
-.p-idea p{margin:4px 0 0}
+/* PDF 보고서 (화면 밖에서 그려 PDF로) — 인쇄물이라 아이보리 종이 한 가지 색 */
+.pdf-host{--rf:"Noto Serif KR","Noto Serif CJK KR","AppleMyungjo","Batang",serif;--rc:#7A1A1F;--rg:#A9822F;--rgl:#E3C987;--ri:#241A19;--rm:#7A6A66;--rr:#E6DCD3;--rp:#FBF8F3;--rw:#FFFFFF;
+  position:absolute;left:-12000px;top:0;width:720px;background:var(--rp);color:var(--ri);font-family:var(--f-body);font-size:13.5px;line-height:1.62;word-break:keep-all}
+.pdf-host .pb{background:var(--rp);padding-bottom:6px}
+.pdf-host p{margin:0}
+.r-lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--rg);margin-bottom:3px}
+.r-cover{position:relative;overflow:hidden;border-radius:16px;padding:28px 32px 20px;color:#F3E9E4;background:linear-gradient(135deg,#431015 0%,#22090B 60%,#120607 100%)}
+.r-moon{position:absolute;right:-46px;top:-64px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle at 38% 40%,#D0393F 0%,#8E1E24 46%,rgba(120,24,30,0) 70%)}
+.r-moon2{position:absolute;right:62px;top:40px;width:6px;height:6px;border-radius:50%;background:#E3C987;box-shadow:0 0 10px 3px rgba(227,201,135,.6)}
+.r-ctop{position:relative;display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.32em;color:var(--rgl);font-weight:700}
+.r-badge{letter-spacing:.06em;border:1px solid var(--rgl);border-radius:999px;padding:2px 12px;background:rgba(0,0,0,.25)}
+.r-title{position:relative;font-family:var(--rf);font-weight:700;font-size:36px;line-height:1.25;margin:20px 0 8px;color:#FFF6EE}
+.r-meta{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:12.5px;color:#DCC8C1}
+.r-meta i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--rgl)}
+.r-rule{position:relative;height:3px;border-top:1px solid rgba(227,201,135,.6);border-bottom:1px solid rgba(227,201,135,.25);margin:20px 0 10px}
+.r-cfoot{position:relative;display:flex;justify-content:space-between;font-size:11px;color:#BFA9A2;letter-spacing:.03em}
+.r-kpis{display:grid;grid-template-columns:1.15fr 1fr 1fr 1fr;gap:10px;margin-top:12px}
+.r-kpi{background:var(--rw);border:1px solid var(--rr);border-radius:12px;padding:12px 14px}
+.r-kpi .k-l{display:block;font-size:11px;letter-spacing:.06em;color:var(--rm)}
+.r-kpi b{display:block;font-family:var(--rf);font-size:21px;font-weight:700;line-height:1.35;margin-top:2px;color:var(--ri)}
+.r-kpi .k-s{font-size:11px;color:var(--rm)}
+.r-kpi.main{background:linear-gradient(160deg,#8A1F25 0%,#4E1015 100%);border-color:#6A161B}
+.r-kpi.main .k-l{color:#EBD2CC}
+.r-kpi.main b{color:#FFF6EE;font-size:28px}
+.r-kpi.main small{font-size:13px;color:#E3C9C2;font-weight:600}
+.r-dots{display:flex;gap:4px;margin-top:2px}
+.r-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22)}
+.r-dots i.on{background:var(--rgl)}
+.r-q{margin-top:12px;background:var(--rw);border:1px solid var(--rr);border-left:3px solid var(--rg);border-radius:10px;padding:12px 16px}
+.r-q ol{margin:2px 0 0;padding-left:18px}
+.r-q li{margin:1px 0}
+.r-qc{display:block;margin-top:6px;font-size:11.5px;color:var(--rm)}
+.r-sh{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px;padding-bottom:7px;border-bottom:1px solid var(--rr)}
+.r-sno{font-family:var(--rf);font-size:21px;font-weight:700;color:var(--rg)}
+.r-sh h2{font-family:var(--rf);font-size:19px;font-weight:700;margin:0;color:var(--ri)}
+.r-ssub{margin-left:auto;font-size:11.5px;color:var(--rm)}
+.r-card{background:var(--rw);border:1px solid var(--rr);border-radius:12px;padding:14px 16px}
+.r-kv{display:grid;grid-template-columns:96px minmax(0,1fr);gap:6px 14px;margin:8px 0 0;font-size:13px}
+.r-kv dt{color:var(--rm);font-size:12px;padding-top:1px}
+.r-kv dd{margin:0}
+.r-imp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.r-imp>div{background:var(--rw);border:1px solid var(--rr);border-radius:12px;padding:12px 14px}
+.r-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:4px}
+.r-stats>div{background:#F7F1EC;border-radius:10px;padding:8px 12px}
+.r-stats span{display:block;font-size:11px;color:var(--rm)}
+.r-stats b{font-family:var(--rf);font-size:15.5px;font-weight:700}
+.r-dish{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;background:var(--rw);border:1px solid var(--rr);border-radius:14px;padding:12px}
+.r-dish.nophoto{grid-template-columns:minmax(0,1fr);padding:14px 18px}
+.r-dph{position:relative;width:260px;height:195px;border-radius:10px;background:#EEE5DF center/cover no-repeat}
+.r-dno{position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:50%;background:rgba(18,6,7,.8);color:var(--rgl);font-family:var(--rf);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+.r-dbody{padding:4px 4px 2px 0}
+.r-dname{font-family:var(--rf);font-size:21px;font-weight:700;line-height:1.3}
+.r-chips{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 8px}
+.r-chips span{font-size:11.5px;border-radius:999px;padding:2px 10px;background:#F5EDE8;color:#5E4A45}
+.r-chips span.price{background:var(--rc);color:#FFF6EE;font-weight:700;font-family:var(--f-num)}
+.r-words{display:flex;flex-wrap:wrap;gap:4px 12px}
+.r-words span{font-size:13px;color:var(--rc);font-weight:700}
+.r-quote{margin-top:10px;padding-top:8px;border-top:1px dashed var(--rr);font-size:11.5px;color:var(--rm)}
+.r-quote b{font-family:var(--rf);font-size:16px;color:var(--rg);margin-left:6px}
+.r-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.r-split>div{border-radius:10px;padding:12px 14px}
+.sp-prep{background:#F3EFE4;border-top:3px solid #8C7A4B}
+.sp-prep .r-lbl{color:#7A6838}
+.sp-cook{background:#F8EBE7;border-top:3px solid var(--rc)}
+.sp-cook .r-lbl{color:var(--rc)}
+.r-score{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:center;background:var(--rw);border:1px solid var(--rr);border-radius:14px;padding:18px 20px}
+.r-ring{width:128px;height:128px;border-radius:50%;border:7px solid var(--rc);box-shadow:inset 0 0 0 3px #F3E3DF;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.r-ring b{font-family:var(--rf);font-size:38px;font-weight:700;line-height:1.1;color:var(--rc)}
+.r-ring span{font-size:11px;color:var(--rm);letter-spacing:.1em}
+.r-srow{display:grid;grid-template-columns:84px minmax(0,1fr) 20px;gap:4px 12px;align-items:center;padding:6px 0}
+.r-srow+.r-srow{border-top:1px dashed var(--rr)}
+.r-bar{display:flex;gap:4px}
+.r-bar i{flex:1;height:10px;border-radius:3px;background:#F0E6E2}
+.r-bar i.on{background:linear-gradient(90deg,#A3262C,#7A1A1F)}
+.r-srow b{font-family:var(--rf);font-weight:700;color:var(--rc);text-align:right}
+.r-srow em{grid-column:2/-1;font-style:normal;font-size:11.5px;color:var(--rm)}
+.r-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.r-three>div{background:var(--rw);border:1px solid var(--rr);border-radius:12px;padding:12px 14px;border-top-width:3px}
+.r-tl{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:4px}
+.r-tl i{width:8px;height:8px;border-radius:50%}
+.t-keep{border-top-color:#2F7A52!important}.t-keep .r-tl{color:#2F7A52}.t-keep i{background:#2F7A52}
+.t-change{border-top-color:#A9822F!important}.t-change .r-tl{color:#8E6A1F}.t-change i{background:#A9822F}
+.t-avoid{border-top-color:#B4372B!important}.t-avoid .r-tl{color:#B4372B}.t-avoid i{background:#B4372B}
+.r-idea{background:var(--rw);border:1px solid var(--rr);border-left:4px solid var(--rg);border-radius:12px;padding:14px 18px}
+.r-ititle{font-family:var(--rf);font-size:19px;font-weight:700;line-height:1.3}
+.r-why{color:var(--rm);margin-top:4px!important}
+.r-my{margin:10px 0;background:#FBF3E3;border-radius:10px;padding:10px 14px;font-weight:500}
+.r-my span{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--rg);margin-bottom:2px}
+.r-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:10px;border-top:1px solid var(--rg);font-size:11px;color:var(--rm)}
+.r-foot b{font-family:var(--rf);font-size:14px;color:var(--rc)}
 .p-rcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .p-rcbig{height:560px;border-radius:8px;border:1px solid #E6DCD9;background:#F3EEEC center/contain no-repeat}
 .p-rc{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;border:1px solid #E6DCD9;border-radius:10px;padding:10px}
@@ -438,7 +493,6 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .p-tbl td{text-align:right;padding:4px 6px;border-bottom:1px solid #F1EAE8;font-family:var(--f-num)}
 .p-tbl th:first-child,.p-tbl td:first-child{text-align:left;font-family:var(--f-body)}
 .p-tbl tfoot td{font-weight:700;color:#9C2328;border-bottom:0}
-.p-foot{font-size:11px;color:#9A8B87;text-align:right;margin:10px 0 0}
 
 /* 하단 탭 / FAB / 시트 / 토스트 */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--surface);border-top:1px solid var(--line);
@@ -947,7 +1001,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.5 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.7 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1448,67 +1502,116 @@ async function pdfLibs() {
 }
 function pdfHTML(r, detail) {
   const b = r.basic, w = r.wrap, avg = bAvg(r), ph = bPerHead(r), stay = bmins(b.enter, b.leave);
-  const kv = rows => { rows = rows.filter(x => x[1]); return rows.length ? `<dl class="kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''; };
-  const sec = (title, inner) => inner ? `<div class="pb"><h2 class="ps">${title}</h2>${inner}</div>` : '';
-  const meta = [b.date && `${b.date.replace(/-/g, '. ')} (${bDay(b.date)})`, stay != null && bStay(stay), b.type, b.area].filter(Boolean).join(' · ');
   const dishes = r.dishes.filter(d => d.name || d.photo);
-  let html = `<div class="pb"><div class="p-band">
-      <div class="p-eye">벤치마킹 ${detail ? '상세' : '간편'} 보고서${db.settings.shop ? ' · ' + esc(db.settings.shop) : ''}</div>
-      <div class="p-title">${esc(b.store || '이름 없는 가게')}</div>
-      ${meta ? `<div class="p-meta">${esc(meta)}</div>` : ''}
+  const store = (b.store || '이름 없는 가게');
+  const kv = rows => { rows = rows.filter(x => x[1]); return rows.length ? `<dl class="r-kv">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''; };
+  let no = 0;
+  const head = (title, sub) => `<div class="r-sh"><span class="r-sno">${String(++no).padStart(2, '0')}</span><h2>${title}</h2>${sub ? `<span class="r-ssub">${esc(sub)}</span>` : ''}</div>`;
+  const sec = (title, sub, inner) => inner ? `<div class="pb">${head(title, sub)}${inner}</div>` : '';
+  const cooks = dishes.map(d => bmins(d.ordered, d.served)).filter(x => x != null);
+  const avgCook = cooks.length ? Math.round(cooks.reduce((a, x) => a + x, 0) / cooks.length) : null;
+  const metaBits = [b.date && `${b.date.replace(/-/g, '. ')} (${bDay(b.date)})`, b.enter && `${b.enter}${b.leave ? '–' + b.leave : ''}`, b.type, b.area].filter(Boolean);
+  const round = avg ? Math.round(+avg) : 0;
+
+  /* 표지 */
+  let html = `<div class="pb"><div class="r-cover">
+      <div class="r-ctop"><span>벤치마킹 리포트</span><span class="r-badge">${detail ? '상세 보고서' : '간편 보고서'}</span></div>
+      <div class="r-title">${esc(store)}</div>
+      ${metaBits.length ? `<div class="r-meta">${metaBits.map(x => `<span>${esc(x)}</span>`).join('<i></i>')}</div>` : ''}
+      <div class="r-rule"></div>
+      <div class="r-cfoot"><span>${esc(db.settings.shop || '')}${db.settings.shop ? ' · ' : ''}서연이의 레시피노트</span><span>작성 ${today().replace(/-/g, '. ')}</span></div>
     </div>
-    <div class="p-stats">
-      <div><b>${avg ? avg : '—'}</b><span>평균 점수 / 5</span></div>
-      <div><b>${ph ? won(ph) : '—'}</b><span>1인 객단가</span></div>
-      <div><b>${b.people ? esc(b.people) + '명' : '—'}</b><span>${b.spent ? '쓴 돈 ' + won(bnum(b.spent)) : '인원'}</span></div>
-      <div><b>${dishes.length}개</b><span>먹은 접시</span></div>
+    <div class="r-kpis">
+      <div class="r-kpi main"><span class="k-l">종합 점수</span><b>${avg || '—'}<small> / 5</small></b><span class="r-dots">${[1, 2, 3, 4, 5].map(v => `<i class="${v <= round ? 'on' : ''}"></i>`).join('')}</span></div>
+      <div class="r-kpi"><span class="k-l">1인 객단가</span><b>${ph ? won(ph) : '—'}</b><span class="k-s">${[b.people && b.people + '명', b.spent && won(bnum(b.spent))].filter(Boolean).join(' · ') || '&nbsp;'}</span></div>
+      <div class="r-kpi"><span class="k-l">머문 시간</span><b>${stay != null ? bStay(stay) : '—'}</b><span class="k-s">${b.date ? bDay(b.date) + '요일' : '&nbsp;'}</span></div>
+      <div class="r-kpi"><span class="k-l">먹은 접시</span><b>${dishes.length}접시</b><span class="k-s">${avgCook != null ? `평균 조리 ${avgCook}분` : '&nbsp;'}</span></div>
     </div>
-    ${detail ? kv([['같이 간 사람', b.companion], ['질문 1', b.q1], ['질문 2', b.q2], ['질문 3', b.q3]]).replace('class="kv"', 'class="kv" style="margin-top:12px"') : ''}
+    ${detail && (b.q1 || b.q2 || b.q3) ? `<div class="r-q"><span class="r-lbl">오늘의 질문</span><ol>${[b.q1, b.q2, b.q3].filter(Boolean).map(q => `<li>${esc(q)}</li>`).join('')}</ol>${b.companion ? `<span class="r-qc">함께 간 사람 · ${esc(b.companion)}</span>` : ''}</div>` : ''}
   </div>`;
+
+  /* 상세: 첫인상 · 메뉴판 */
   if (detail) {
     const im = r.impression, m = r.menu;
-    html += sec('첫인상', kv([['문 앞', im.door], ['내 자리', im.seat], ['빛·소리·냄새', im.senses]]));
-    html += sec('메뉴판', kv([['갈래', m.groups], ['메뉴 수', m.count && m.count + '개'], ['가격', (m.min ? won(bnum(m.min)) : '') + (m.max ? ' ~ ' + won(bnum(m.max)) : '')],
-      ['많은 가격대', m.common], ['추천 표시', m.badge], ['혼자 손님', m.solo], ['더하기 옵션', m.addon], ['바뀌는 칸', m.rotating]]));
+    const imp = [['문 앞', im.door], ['내 자리', im.seat], ['빛 · 소리 · 냄새', im.senses]].filter(x => x[1]);
+    html += sec('첫인상', '문 앞에서 내 자리까지', imp.length ? `<div class="r-imp">${imp.map(([k, v]) => `<div><span class="r-lbl">${k}</span><p>${esc(v)}</p></div>`).join('')}</div>` : '');
+    const mStats = [['메뉴 수', m.count && m.count + '개'], ['가격 범위', (m.min ? won(bnum(m.min)) : '') + (m.max ? ' ~ ' + won(bnum(m.max)) : '')], ['많은 가격대', m.common], ['혼자 손님', m.solo]].filter(x => x[1]);
+    const mInner = (mStats.length ? `<div class="r-stats">${mStats.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+      + kv([['갈래', m.groups], ['추천 표시', m.badge], ['더하기 옵션', m.addon], ['바뀌는 칸', m.rotating]]);
+    html += sec('메뉴판', '주문하며 본 것', mInner && `<div class="r-card">${mInner}</div>`);
   }
+
+  /* 접시 */
   dishes.forEach((d, i) => {
     const cm = bmins(d.ordered, d.served);
-    const sub = [d.price && won(bnum(d.price)), cm != null && `조리 ${cm}분`, d.portion].filter(Boolean).join(' · ');
-    const rows = detail ? [['세 단어', [d.w1, d.w2, d.w3].filter(Boolean).join(' · ')], ['온도', d.temp], ['담음새', d.plating], ['재료 짐작', d.guess], ['기억할 한 단어', d.word]] : [['맛 한 단어', d.w1]];
-    html += `<div class="pb">${i === 0 ? '<h2 class="ps">먹은 접시</h2>' : ''}<div class="p-dish${d.photo ? '' : ' nophoto'}">
-      ${d.photo ? `<div class="p-photo" data-pid="${d.photo}"></div>` : ''}
-      <div><div class="p-dno">접시 ${i + 1}</div><div class="p-dname">${esc(d.name || '이름 없음')}</div>${sub ? `<div class="p-dsub">${esc(sub)}</div>` : ''}${kv(rows)}</div>
-    </div></div>`;
+    const chips = [d.price && `<span class="price">${won(bnum(d.price))}</span>`, cm != null && `<span>조리 ${cm}분</span>`, d.portion && `<span>${esc(d.portion)}</span>`, detail && d.temp && `<span>${esc(d.temp)}</span>`].filter(Boolean).join('');
+    const words = (detail ? [d.w1, d.w2, d.w3] : [d.w1]).filter(Boolean);
+    const rows = detail ? [['담음새', d.plating], ['재료 짐작', d.guess]] : [];
+    html += `<div class="pb">${i === 0 ? head('먹은 접시', `${dishes.length}접시 · 나온 순서대로`) : ''}
+      <div class="r-dish${d.photo ? '' : ' nophoto'}">
+        ${d.photo ? `<div class="r-dph" data-pid="${d.photo}"><span class="r-dno">${i + 1}</span></div>` : ''}
+        <div class="r-dbody">
+          ${d.photo ? '' : `<span class="r-lbl">접시 ${i + 1}</span>`}
+          <div class="r-dname">${esc(d.name || '이름 없음')}</div>
+          ${chips ? `<div class="r-chips">${chips}</div>` : ''}
+          ${words.length ? `<div class="r-words">${words.map(x => `<span>#${esc(x)}</span>`).join('')}</div>` : ''}
+          ${kv(rows)}
+          ${detail && d.word ? `<div class="r-quote">기억에 남는 한 단어 <b>“${esc(d.word)}”</b></div>` : ''}
+        </div>
+      </div></div>`;
   });
+
+  /* 상세: 주방 · 손님 */
   if (detail) {
     const k = r.kitchen, g = r.guests, dg = bDaily(r);
-    html += sec('주방과 운영', kv([['밑작업 짐작', k.prep], ['영업 조리', k.cook], ['화구', k.burners && k.burners + '개'], ['운영 인원', k.staff && k.staff + '명'], ['바빠 보인 손님 수', k.busyAt && k.busyAt + '명'], ['정리·설거지', k.cleanup]]));
-    html += sec('손님과 돈', kv([['손님 구성', g.mix], ['나이대', g.age], ['좌석·회전', (g.seats ? g.seats + '석' : '') + (g.turns ? ' × ' + g.turns + '바퀴' : '')],
-      ['하루 손님 짐작', dg && dg + '명'], ['하루 매출 짐작', dg && ph ? '약 ' + manwon(dg * ph) : ''], ['술', g.drinks], ['사장의 말', g.talk], ['마지막 인상', g.last]]));
+    const kStats = [['화구', k.burners && k.burners + '개'], ['운영 인원', k.staff && k.staff + '명'], ['바빠진 시점', k.busyAt && '손님 ' + k.busyAt + '명']].filter(x => x[1]);
+    const kInner = ((k.prep || k.cook) ? `<div class="r-split">${k.prep ? `<div class="sp-prep"><span class="r-lbl">장사 전 밑작업 (짐작)</span><p>${esc(k.prep)}</p></div>` : ''}${k.cook ? `<div class="sp-cook"><span class="r-lbl">주문 후 조리</span><p>${esc(k.cook)}</p></div>` : ''}</div>` : '')
+      + (kStats.length ? `<div class="r-stats">${kStats.map(([a, v]) => `<div><span>${a}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+      + kv([['정리·설거지', k.cleanup]]);
+    html += sec('주방과 운영', '밑작업과 주문 후 조리', kInner);
+    const gStats = [['좌석', g.seats && g.seats + '석'], ['자리 회전', g.turns && g.turns + '바퀴'], ['하루 손님', dg && '약 ' + dg + '명'], ['하루 매출', dg && ph ? '약 ' + manwon(dg * ph) : '']].filter(x => x[1]);
+    const gInner = (gStats.length ? `<div class="r-stats">${gStats.map(([a, v]) => `<div><span>${a}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '')
+      + kv([['손님 구성', g.mix], ['나이대', g.age], ['술', g.drinks], ['사장의 말', g.talk], ['마지막 인상', g.last]]);
+    html += sec('손님과 돈', '모두 짐작값 · 비교용', gInner && `<div class="r-card">${gInner}</div>`);
   }
+
+  /* 점수 */
   const scored = B_SCORES.filter(s => w.scores[s[0]]);
-  if (scored.length) html += sec('점수', `<div class="p-scores">${scored.map(([k, name]) => `<div class="p-srow"><span>${name}</span>
-      <span class="p-bar">${[1, 2, 3, 4, 5].map(v => `<i class="${v <= w.scores[k] ? 'on' : ''}"></i>`).join('')}</span><b>${w.scores[k]}</b>
-      ${detail && w.reasons[k] ? `<em>${esc(w.reasons[k])}</em>` : ''}</div>`).join('')}</div>`);
+  if (scored.length) html += sec('점수', '5점 만점', `<div class="r-score">
+      <div class="r-ring"><b>${avg}</b><span>평균</span></div>
+      <div>${scored.map(([k, name]) => `<div class="r-srow"><span>${name}</span><span class="r-bar">${[1, 2, 3, 4, 5].map(v => `<i class="${v <= w.scores[k] ? 'on' : ''}"></i>`).join('')}</span><b>${w.scores[k]}</b>${detail && w.reasons[k] ? `<em>${esc(w.reasons[k])}</em>` : ''}</div>`).join('')}</div>
+    </div>`);
+
+  /* 정리 */
   const three = [['keep', '가져올 것'], ['change', '바꿀 것'], ['avoid', '피할 것']].filter(([k]) => w[k]);
-  if (three.length) html += sec('정리', `<div class="p-three">${three.map(([k, l]) => `<div class="t-${k}"><b>${l}</b><p>${esc(w[k])}</p></div>`).join('')}</div>`);
-  r.ideas.filter(d => d.from || d.myway).forEach((d, i) => {
-    const rows = detail ? [['맛있었던 이유', d.why], ['예상 밑작업', d.prep], ['예상 영업 조리', d.cook], ['목표 시간', d.target && d.target + '분'], ['시험 결과', d.result]] : [];
-    html += `<div class="pb">${i === 0 ? '<h2 class="ps">레시피 아이디어</h2>' : ''}<div class="p-idea"><div class="p-dname">${esc(d.from || '아이디어 ' + (i + 1))}</div>${d.myway ? `<p>→ ${esc(d.myway)}</p>` : ''}${kv(rows)}</div></div>`;
+  if (three.length) html += sec('정리', '우리 가게에 적용할 점', `<div class="r-three">${three.map(([k, l]) => `<div class="t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}</div>`);
+
+  /* 레시피 아이디어 */
+  r.ideas.filter(d => d.from || d.myway).forEach((d, i, arr) => {
+    const split = detail && (d.prep || d.cook) ? `<div class="r-split">${d.prep ? `<div class="sp-prep"><span class="r-lbl">예상 밑작업</span><p>${esc(d.prep)}</p></div>` : ''}${d.cook ? `<div class="sp-cook"><span class="r-lbl">예상 주문 후 조리${d.target ? ` · 목표 ${esc(d.target)}분` : ''}</span><p>${esc(d.cook)}</p></div>` : ''}</div>` : '';
+    html += `<div class="pb">${i === 0 ? head('레시피 아이디어', `${arr.length}개 · 레시피노트로 옮길 것`) : ''}
+      <div class="r-idea">
+        <span class="r-lbl">아이디어 ${i + 1}</span>
+        <div class="r-ititle">${esc(d.from || '이름 없는 아이디어')}</div>
+        ${detail && d.why ? `<p class="r-why">${esc(d.why)}</p>` : ''}
+        ${d.myway ? `<div class="r-my"><span>내 방식으로</span>${esc(d.myway)}</div>` : ''}
+        ${split}${detail ? kv([['시험 결과', d.result]]) : ''}
+      </div></div>`;
   });
-  if (!FEATURES.receiptOCR && r.receipts.length) {
-    html += `<div class="pb"><h2 class="ps">영수증</h2><div class="p-rcs">${r.receipts.map(rc => `<div class="p-rcbig" data-pid="${rc.photo}"></div>`).join('')}</div></div>`;
-  }
+
+  /* 영수증 (사진) */
+  if (!FEATURES.receiptOCR && r.receipts.length) html += sec('영수증', `${r.receipts.length}장`, `<div class="p-rcs">${r.receipts.map(rc => `<div class="p-rcbig" data-pid="${rc.photo}"></div>`).join('')}</div>`);
   if (FEATURES.receiptOCR) r.receipts.filter(rc => rc.status === 'ok').forEach((rc, i) => {
     const sm = rcSums(rc), items = rc.items.filter(x => x.name);
-    html += `<div class="pb">${i === 0 ? '<h2 class="ps">영수증</h2>' : ''}<div class="p-rc">
+    html += `<div class="pb">${i === 0 ? head('영수증', '') : ''}<div class="p-rc">
       <div class="p-rcimg" data-pid="${rc.photo}"></div>
       <div>${kv([['상호', rc.store], ['장소', rc.address], ['일시', rc.datetime], ['결제', [rc.total && won(bnum(rc.total)), rc.pay].filter(Boolean).join(' · ')], ['사업자번호', rc.bizno]])}
         ${items.length ? `<table class="p-tbl"><thead><tr><th>메뉴</th><th>수량</th><th>금액</th></tr></thead><tbody>${items.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.qty)}</td><td>${won(bnum(x.amount) || 0)}</td></tr>`).join('')}</tbody>
         <tfoot><tr><td>메뉴 ${sm.n}가지 · 수량 ${sm.qty}개</td><td></td><td>${won(sm.sum)}</td></tr></tfoot></table>` : ''}</div>
     </div></div>`;
   });
-  html += `<div class="pb"><p class="p-foot">서연이의 레시피노트 · ${today()} 작성</p></div>`;
+
+  html += `<div class="pb"><div class="r-foot"><b>${esc(store)}</b><span>${detail ? '상세' : '간편'} 보고서 · 서연이의 레시피노트 · ${today().replace(/-/g, '. ')}</span></div></div>`;
   return html;
 }
 async function buildPdf(r, detail) {
@@ -1523,13 +1626,13 @@ async function buildPdf(r, detail) {
       await new Promise(ok => { const im = new Image(); im.onload = im.onerror = ok; im.src = u; });
       el.style.backgroundImage = `url("${u}")`;
     }));
-    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    if (document.fonts) { await Promise.all(['700 30px "Noto Serif KR"', '600 16px "Noto Serif KR"', '500 14px "IBM Plex Sans KR"', '700 14px "IBM Plex Sans KR"', '500 14px "IBM Plex Mono"'].map(f => document.fonts.load(f).catch(() => {}))); await document.fonts.ready; }
     window.scrollTo(0, 0);
     const { jsPDF } = window.jspdf;
     const PW = 595.28, M = 30, W = PW - M * 2, GAP = 8, MAXH = 14000;   // A4 폭, 길이는 내용만큼 (PDF 한 쪽 최대 길이까지)
     const shots = [];
     for (const el of host.querySelectorAll('.pb')) {
-      const c = await window.html2canvas(el, { scale: 2, backgroundColor: '#ffffff', logging: false });
+      const c = await window.html2canvas(el, { scale: 2, backgroundColor: '#FBF8F3', logging: false });
       shots.push({ u: c.toDataURL('image/jpeg', 0.86), h: c.height * W / c.width });
     }
     const groups = [[]]; let acc = M;
@@ -1539,6 +1642,7 @@ async function buildPdf(r, detail) {
     const pages = [];
     groups.forEach((g, i) => {
       const PH = pageH(g); if (i) pdf.addPage([PW, PH]);
+      pdf.setFillColor(251, 248, 243); pdf.rect(0, 0, PW, PH, 'F');   // 종이색
       let y = M; const items = [];
       g.forEach(sh => { pdf.addImage(sh.u, 'JPEG', M, y, W, sh.h); items.push({ u: sh.u, x: M, y, w: W, h: sh.h }); y += sh.h + GAP; });
       pages.push({ items, PH });
