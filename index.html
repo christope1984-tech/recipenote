@@ -328,6 +328,25 @@ details.card summary{cursor:pointer}
 .dp-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .dp-btn{height:44px;border:1px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--accent);font-weight:700;font-size:14px;background:var(--surface);cursor:pointer}
 .dp-btn svg{width:18px;height:18px}
+/* 재료 단가표 */
+.plist{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.prow{border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow-h{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;text-align:left;border:0;background:none;padding:12px 16px}
+.prow-h:active{background:var(--accent-soft)}
+.prow .pn{font-weight:700;font-size:15.5px;min-width:0}
+.prow .pp{font-size:14px;font-weight:600;text-align:right}
+.prow .pm{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.prow.open{background:var(--bg)}
+.pedit{display:grid;gap:10px;padding:0 16px 14px}
+.pgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr) minmax(0,1.3fr);gap:8px}
+.puse{display:grid;gap:6px}
+.puse button{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px}
+.puse .num{font-size:13.5px;font-weight:600}
+.ptag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:1px 6px}
+.pwarn{font-size:11.5px;color:var(--warn)}
+.pnew{flex-basis:100%;font-size:11.5px;color:var(--muted)}
+.pedit .btn-sm{justify-self:start}
 /* 첫 화면 설정 */
 .sp-prev{width:100%;max-width:200px;aspect-ratio:1/1;margin:0 auto;border-radius:12px;border:1px solid var(--line);background:#0B0606 var(--splash-default) center/contain no-repeat}
 .maker{display:grid;gap:6px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
@@ -567,10 +586,22 @@ function sampleData() {
     ],
   };
 }
+function pkey(name) { return String(name || '').replace(/\s/g, '').toLowerCase(); }
+function buildPantry(recipes) {      // 예전 데이터: 메뉴마다 적어 둔 단가를 모아 단가표로 (가장 최근 수정한 메뉴 값 우선)
+  const num = v => { const x = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isFinite(x) ? x : 0; };
+  const m = new Map();
+  recipes.slice().sort((a, b) => String(a.updatedAt || '').localeCompare(String(b.updatedAt || ''))).forEach(r => (r.ingredients || []).forEach(i => {
+    const k = pkey(i.name); if (!k || !(num(i.buyQty) > 0)) return;
+    m.set(k, { id: uid(), name: String(i.name).trim(), buyQty: num(i.buyQty), unit: i.unit || 'g', buyPrice: num(i.buyPrice), updatedAt: r.updatedAt || '' });
+  }));
+  return [...m.values()];
+}
 function normalize(d) {
   d.settings = Object.assign({ shop: '', target: 33, benchMode: 'simple' }, d.settings || {});
   d.bench = (Array.isArray(d.bench) ? d.bench : []).filter(x => x && typeof x === 'object').map(bNormalize);
   d.prepLog = Object.assign({ date: '', done: [] }, d.prepLog || {});
+  d.pantry = Array.isArray(d.pantry) ? d.pantry : buildPantry(d.recipes || []);
+  _pm = null;
   d.recipes = d.recipes.map(r => Object.assign({ category:'안주', yieldUnit:'접시', salePrice:0, targetMin:'', prepBatch:10, prepStorage:'', ingredients:[], prepSteps:[], serviceSteps:[], memo:'' }, r));
   return d;
 }
@@ -589,13 +620,18 @@ function load() {
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { return false; } }
 
+let _pm = null;   // 재료 단가표 찾기용 (이름 → 재료)
 let db = load();
-const state = { tab:'list', view:'list', id:null, phase:'prep', q:'', cat:'전체', batch:10, orders:1, checked:new Set(), draft:null, editFrom:null, timer:null, sheetCb:null, bid:null };
+const state = { tab:'list', view:'list', id:null, phase:'prep', q:'', cat:'전체', batch:10, orders:1, checked:new Set(), draft:null, editFrom:null, timer:null, sheetCb:null, bid:null, costView:'menu', popen:null, pq:'' };
 
 /* ===== 2. 계산 ===== */
 const n = v => { const x = parseFloat(String(v ?? '').replace(/,/g, '')); return isFinite(x) ? x : 0; };
 const find = id => db.recipes.find(r => r.id === id);
-const ingCost = i => n(i.buyQty) > 0 ? n(i.qty) / n(i.buyQty) * n(i.buyPrice) : 0;
+function ingCost(i) {   // 단가표에 같은 이름 재료가 있으면 그 값, 없으면 메뉴에 적은 값
+  const p = pantryOf(i.name);
+  if (p && n(p.buyQty) > 0) { const q = convQty(n(i.qty), i.unit, p.unit); if (q != null) return q / n(p.buyQty) * n(p.buyPrice); }
+  return n(i.buyQty) > 0 ? n(i.qty) / n(i.buyQty) * n(i.buyPrice) : 0;
+}
 const ingsOf = (r, stage) => r.ingredients.filter(i => i.stage === stage);
 function calc(r) {
   const prep = ingsOf(r, 'prep').reduce((s, i) => s + ingCost(i), 0);
@@ -813,6 +849,7 @@ function viewEdit() {
       <p class="help" style="margin:0">합계가 목표 시간을 넘으면, 미리 할 수 있는 과정을 밑작업으로 옮기세요.</p>
     </section>
 
+    <datalist id="pantry-names">${db.pantry.filter(p => p.name).map(p => `<option value="${esc(p.name)}">`).join('')}</datalist>
     <div class="field"><label for="f-memo">메모</label><textarea id="f-memo" rows="3" data-f="memo" placeholder="거래처, 주의할 점, 품절 기준">${esc(d.memo)}</textarea></div>
     <p class="err" id="err" hidden></p>
     <div class="save-row"><button type="button" data-act="back">취소</button><button type="submit" class="primary">저장</button></div>
@@ -822,16 +859,12 @@ function ingRow(i, k) {
   const units = UNITS.includes(i.unit) ? UNITS : [i.unit, ...UNITS];
   return `<div class="ing-ed">
     <div class="r1">
-      <input id="ing-${k}-name" type="text" data-i="${k}" data-k="name" value="${esc(i.name)}" placeholder="재료명" aria-label="재료명">
+      <input id="ing-${k}-name" type="text" data-i="${k}" data-k="name" value="${esc(i.name)}" placeholder="재료명" aria-label="재료명" list="pantry-names" autocomplete="off">
       <input id="ing-${k}-qty" type="number" inputmode="decimal" data-i="${k}" data-k="qty" value="${i.qty || ''}" placeholder="사용량" aria-label="사용량">
       <select id="ing-${k}-unit" data-i="${k}" data-k="unit" aria-label="단위">${units.map(u => `<option ${u === i.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select>
       <button type="button" class="rm" data-act="rmIng" data-k="${k}" aria-label="재료 삭제">×</button>
     </div>
-    <div class="r2">구매
-      <input id="ing-${k}-bq" type="number" inputmode="decimal" data-i="${k}" data-k="buyQty" value="${i.buyQty || ''}" aria-label="구매량"><span class="u">${esc(i.unit)}</span>에
-      <input id="ing-${k}-bp" type="number" inputmode="numeric" data-i="${k}" data-k="buyPrice" value="${i.buyPrice || ''}" aria-label="구매 가격">원
-      <output id="ing-${k}-out">${won(ingCost(i))}</output>
-    </div>
+    <div class="r2" id="ing-${k}-r2">${ingR2(i, k)}</div>
   </div>`;
 }
 function updateLive() {
@@ -843,13 +876,18 @@ function updateLive() {
 
 function viewCost() {
   setTop('원가·시간표', false);
+  const pantry = state.costView === 'pantry';
+  const seg = `<div class="bmode" role="group" aria-label="보기" style="margin-bottom:14px">
+    <button data-act="costView" data-v="menu" class="${pantry ? '' : 'on'}" aria-pressed="${!pantry}">메뉴 원가</button>
+    <button data-act="costView" data-v="pantry" class="${pantry ? 'on' : ''}" aria-pressed="${pantry}">재료 단가표 <span class="num" style="font-weight:500;opacity:.8">${db.pantry.length}</span></button></div>`;
+  if (pantry) return seg + viewPantry();
   const rows = db.recipes.map(r => ({ r, c: calc(r), tt: svcTime(r) }));
   const sold = rows.filter(x => x.c.rate != null).sort((a, b) => b.c.rate - a.c.rate);
   const avg = sold.length ? sold.reduce((s, x) => s + x.c.rate, 0) / sold.length : 0;
   const over = sold.filter(x => rateCls(x.c.rate) === 'bad').length;
   const late = rows.filter(x => n(x.r.targetMin) && x.tt > n(x.r.targetMin)).length;
   const t = n(db.settings.target) || 33;
-  return `
+  return seg + `
   <div class="sum">
     <div><b>${sold.length ? avg.toFixed(1) + '%' : '—'}</b><span>평균 원가율<br>목표 ${t}%</span></div>
     <div><b style="color:${over ? 'var(--bad)' : 'var(--good)'}">${over}</b><span>원가율<br>목표 +5%p 초과</span></div>
@@ -867,7 +905,7 @@ function viewCost() {
       </div>
     </button>`;
   }).join('')}</div>` : '<div class="empty">등록된 메뉴가 없습니다.</div>'}
-  <p class="stamp">원가는 등록한 구매 단가, 서빙 시간은 주문 후 조리 단계 시간의 합입니다.</p>`;
+  <p class="stamp">원가는 재료 단가표 기준, 서빙 시간은 주문 후 조리 단계 시간의 합입니다.</p>`;
 }
 
 function viewSettings() {
@@ -898,7 +936,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.2 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.3 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1139,6 +1177,7 @@ let bSaveT = null;
 function bFlush() { if (bSaveT) { clearTimeout(bSaveT); bSaveT = null; if (!save()) toast('저장 공간이 가득 찼습니다. 메뉴 사진을 줄여 주세요.'); } }
 function bTouch() { const r = bCur(); if (r) r.updatedAt = new Date().toISOString(); clearTimeout(bSaveT); bSaveT = setTimeout(bFlush, 400); }
 window.addEventListener('pagehide', bFlush);
+window.addEventListener('pagehide', () => pantryFlush());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') bFlush(); });
 function bRerender() { const y = window.scrollY; render(); window.scrollTo(0, y); }
 
@@ -1784,6 +1823,126 @@ function pvShare() {
   toast('미리보기 화면에서는 공유가 안 됩니다. 설치한 앱에서 눌러 주세요.');
 }
 
+/* ===== 재료 단가표: 재료 값은 여기 한 곳에만. 메뉴 재료는 이름으로 연결돼 자동 계산 ===== */
+const UNIT_BASE = { g: ['w', 1], kg: ['w', 1000], ml: ['v', 1], L: ['v', 1000] };
+function convQty(q, from, to) {
+  if (from === to) return q;
+  const a = UNIT_BASE[from], b = UNIT_BASE[to];
+  return a && b && a[0] === b[0] ? q * a[1] / b[1] : null;
+}
+function pantryMap() { return _pm || (_pm = new Map(db.pantry.filter(p => pkey(p.name)).map(p => [pkey(p.name), p]))); }
+const pantryOf = name => pantryMap().get(pkey(name));
+function pantryUsers(p) { const k = pkey(p.name); return k ? db.recipes.filter(r => r.ingredients.some(i => pkey(i.name) === k)) : []; }
+const buyTxt = p => `${fmt(n(p.buyQty))}${p.unit}에 ${won(n(p.buyPrice))}`;
+function unitPriceTxt(p) {
+  const q = n(p.buyQty); if (!q) return '—';
+  const base = UNIT_BASE[p.unit], per = n(p.buyPrice) / q;
+  if (base && base[1] === 1000) return `${p.unit === 'kg' ? 'g' : 'ml'}당 ${wonU(per / 1000)}`;
+  return `${p.unit}당 ${wonU(per)}`;
+}
+const wonU = v => v === 0 ? '0원' : v < 10 ? v.toFixed(2) + '원' : v < 100 ? v.toFixed(1) + '원' : won(v);
+const shortDate = d => d ? d.slice(5).replace('-', '.') : '';
+let pantrySaveT = null;
+function pantryTouch(p) { p.updatedAt = today(); clearTimeout(pantrySaveT); pantrySaveT = setTimeout(() => { pantrySaveT = null; save(); }, 350); }
+function pantryFlush() { if (pantrySaveT) { clearTimeout(pantrySaveT); pantrySaveT = null; save(); } }
+
+/* 메뉴 편집의 재료 한 줄 아래칸: 단가표와 연결되면 단가표 값 표시, 없으면 직접 입력 */
+function ingR2(i, k) {
+  const p = pantryOf(i.name);
+  if (p) {
+    const ok = convQty(1, i.unit, p.unit) != null;
+    return `<span class="ptag">단가표</span><span>${esc(buyTxt(p))}</span>${ok ? '' : `<span class="pwarn">단위가 달라요 (단가표 ${esc(p.unit)})</span>`}<output id="ing-${k}-out">${won(ingCost(i))}</output>`;
+  }
+  return `구매
+    <input id="ing-${k}-bq" type="number" inputmode="decimal" data-i="${k}" data-k="buyQty" value="${i.buyQty || ''}" aria-label="구매량"><span class="u">${esc(i.unit)}</span>에
+    <input id="ing-${k}-bp" type="number" inputmode="numeric" data-i="${k}" data-k="buyPrice" value="${i.buyPrice || ''}" aria-label="구매 가격">원
+    <output id="ing-${k}-out">${won(ingCost(i))}</output>
+    ${String(i.name || '').trim() ? '<span class="pnew">저장하면 단가표에 추가돼요</span>' : ''}`;
+}
+
+/* 원가·시간표 탭 안의 '재료 단가표' 화면 */
+function pantryRowHTML(p) {
+  const users = pantryUsers(p), open = state.popen === p.id;
+  const head = `<button class="prow-h" data-act="pOpen" data-id="${p.id}" aria-expanded="${open}">
+      <span class="pn">${esc(p.name || '이름 없는 재료')}</span>
+      <span class="pp num">${n(p.buyQty) ? esc(buyTxt(p)) : '단가 없음'}</span>
+      <span class="pm">${unitPriceTxt(p)} · 메뉴 ${users.length}개${p.updatedAt ? ` · ${shortDate(p.updatedAt)} 수정` : ''}</span>
+    </button>`;
+  if (!open) return `<div class="prow" id="pr-${p.id}">${head}</div>`;
+  const units = UNITS.includes(p.unit) ? UNITS : [p.unit, ...UNITS];
+  return `<div class="prow open" id="pr-${p.id}">${head}
+    <div class="pedit">
+      <div class="field"><label for="pn-${p.id}">재료 이름</label><input id="pn-${p.id}" type="text" data-pp="${p.id}" data-pk="name" value="${esc(p.name)}" placeholder="예: 대파"></div>
+      <div class="pgrid">
+        <div class="field"><label for="pq-${p.id}">구매량</label><input id="pq-${p.id}" type="number" inputmode="decimal" data-pp="${p.id}" data-pk="buyQty" value="${p.buyQty || ''}"></div>
+        <div class="field"><label for="pu-${p.id}">단위</label><select id="pu-${p.id}" data-pp="${p.id}" data-pk="unit">${units.map(u => `<option ${u === p.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></div>
+        <div class="field"><label for="pb-${p.id}">가격 (원)</label><input id="pb-${p.id}" type="number" inputmode="numeric" data-pp="${p.id}" data-pk="buyPrice" value="${p.buyPrice || ''}"></div>
+      </div>
+      <div id="pus-${p.id}">${pantryUsersHTML(p)}</div>
+      <button class="btn-sm danger" data-act="pDel" data-id="${p.id}">이 재료 삭제</button>
+    </div></div>`;
+}
+function pantryUsersHTML(p) {
+  const users = pantryUsers(p);
+  if (!users.length) return '<p class="hint" style="margin:0">아직 이 재료를 쓰는 메뉴가 없습니다.</p>';
+  return `<p class="flabel" style="margin:0 0 6px">이 재료를 쓰는 메뉴 · 값을 고치면 바로 바뀝니다</p>
+    <div class="puse">${users.map(r => { const c = calc(r); return `<button data-act="open" data-id="${r.id}"><span>${esc(r.name)}</span><span class="num">${won(c.per)}</span>${chip(c.rate)}</button>`; }).join('')}</div>`;
+}
+function pantryListHTML() {
+  const q = (state.pq || '').trim().toLowerCase();
+  const list = db.pantry.filter(p => !q || String(p.name).toLowerCase().includes(q)).sort((a, b) => String(a.name).localeCompare(String(b.name), 'ko'));
+  if (!db.pantry.length) return '<div class="empty">등록된 재료가 없습니다.<br>메뉴를 저장하면 재료가 여기에 자동으로 모입니다.</div>';
+  if (!list.length) return '<div class="empty">찾는 재료가 없습니다.</div>';
+  return `<div class="plist">${list.map(pantryRowHTML).join('')}</div>`;
+}
+function viewPantry() {
+  return `<p class="lead">재료 값이 바뀌면 여기서 한 번만 고치세요. 이 재료가 들어간 모든 메뉴의 원가와 원가율이 함께 바뀝니다.</p>
+  <div class="search"><input id="pq" type="search" placeholder="재료 찾기" value="${esc(state.pq || '')}" autocomplete="off" aria-label="재료 찾기"></div>
+  <div id="plist" style="margin-top:12px">${pantryListHTML()}</div>
+  <button class="add" data-act="pAdd" style="width:100%;margin-top:12px">+ 재료 추가</button>`;
+}
+function pantryClick(a, t) {
+  switch (a) {
+    case 'pOpen': pantryFlush(); state.popen = state.popen === t.dataset.id ? null : t.dataset.id; $('plist').innerHTML = pantryListHTML(); break;
+    case 'pAdd': {
+      const p = { id: uid(), name: '', buyQty: '', unit: 'g', buyPrice: '', updatedAt: today() };
+      db.pantry.push(p); _pm = null; state.popen = p.id; state.pq = ''; save(); render();
+      const el = $('pn-' + p.id); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); }
+      break;
+    }
+    case 'pDel': {
+      const p = db.pantry.find(x => x.id === t.dataset.id); if (!p) break;
+      const users = pantryUsers(p);
+      ask(`'${p.name || '이름 없는 재료'}' 삭제`, users.length ? `이 재료를 쓰는 메뉴 ${users.length}개는 메뉴에 적어 둔 예전 단가로 계산됩니다.` : '단가표에서 지웁니다.', '삭제', () => {
+        db.pantry = db.pantry.filter(x => x.id !== p.id); _pm = null; save(); $('plist').innerHTML = pantryListHTML(); toast('삭제했습니다');
+      });
+      break;
+    }
+  }
+}
+function pantryInput(el) {
+  const p = db.pantry.find(x => x.id === el.dataset.pp); if (!p) return;
+  const k = el.dataset.pk;
+  if (k === 'name') return;                    // 이름은 입력을 마친 뒤(change) 반영
+  p[k] = k === 'unit' ? el.value : el.value;
+  _pm = null; pantryTouch(p);
+  const row = $('pr-' + p.id);
+  if (row) {
+    row.querySelector('.pp').textContent = n(p.buyQty) ? buyTxt(p) : '단가 없음';
+    row.querySelector('.pm').textContent = `${unitPriceTxt(p)} · 메뉴 ${pantryUsers(p).length}개 · ${shortDate(p.updatedAt)} 수정`;
+  }
+  const us = $('pus-' + p.id); if (us) us.innerHTML = pantryUsersHTML(p);
+}
+function pantryRename(el) {
+  const p = db.pantry.find(x => x.id === el.dataset.pp); if (!p) return;
+  const nv = el.value.trim(), oldK = pkey(p.name), newK = pkey(nv);
+  if (!newK) { el.value = p.name; toast('재료 이름을 입력해 주세요'); return; }
+  if (newK !== oldK && db.pantry.some(x => x !== p && pkey(x.name) === newK)) { el.value = p.name; toast('같은 이름의 재료가 이미 있습니다'); return; }
+  if (oldK && newK !== oldK) db.recipes.forEach(r => r.ingredients.forEach(i => { if (pkey(i.name) === oldK) i.name = nv; }));
+  p.name = nv; _pm = null; pantryTouch(p); pantryFlush();
+  const row = $('pr-' + p.id); if (row) row.querySelector('.pn').textContent = nv;
+}
+
 /* ===== 4. 공통 UI ===== */
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 1800); }
 function ask(title, msg, okLabel, cb, safe = false) {
@@ -1807,6 +1966,9 @@ function saveDraft() {
   d.name = d.name.trim();
   if (!d.name) { const e = $('err'); e.textContent = '메뉴 이름을 입력해 주세요.'; e.hidden = false; $('f-name').focus(); return; }
   d.ingredients = d.ingredients.filter(i => String(i.name).trim()).map(i => ({ ...i, name: i.name.trim(), qty: n(i.qty), buyQty: n(i.buyQty), buyPrice: n(i.buyPrice) }));
+  d.ingredients.forEach(i => {
+    if (!pantryOf(i.name) && i.buyQty > 0) { db.pantry.push({ id: uid(), name: i.name, buyQty: i.buyQty, unit: i.unit, buyPrice: i.buyPrice, updatedAt: today() }); _pm = null; }
+  });
   d.prepSteps = d.prepSteps.map(s => s.trim()).filter(Boolean);
   d.serviceSteps = d.serviceSteps.map(s => ({ text: s.text.trim(), min: n(s.min) })).filter(s => s.text);
   d.salePrice = n(d.salePrice); d.targetMin = n(d.targetMin) || ''; d.prepBatch = n(d.prepBatch) || 10;
@@ -1849,12 +2011,14 @@ document.addEventListener('click', e => {
   if (a.startsWith('b-')) { benchClick(a, t); return; }
   switch (a) {
     case 'skipSplash': hideSplash(); break;
+    case 'costView': pantryFlush(); state.costView = t.dataset.v; render(); break;
+    case 'pOpen': case 'pAdd': case 'pDel': pantryClick(a, t); break;
     case 'splashPlay': replaySplash(); break;
     case 'splashReset': ask('기본 이미지로 되돌리기', '직접 넣은 첫 화면 이미지를 지우고 붉은달빛주점 표지로 돌아갑니다.', '되돌리기', () => {
       PhotoDB.del('splash-custom').catch(() => {}); if (splashURL) { URL.revokeObjectURL(splashURL); splashURL = ''; }
       saveSplashCfg(Object.assign(splashCfg(), { custom: false })); render(); toast('기본 이미지로 되돌렸습니다');
     }, true); break;
-    case 'tab': bFlush(); bPrune(); state.draft = null; state.tab = t.dataset.tab; state.q = ''; state.cat = '전체'; go(state.tab); break;
+    case 'tab': bFlush(); bPrune(); pantryFlush(); state.draft = null; state.tab = t.dataset.tab; state.q = ''; state.cat = '전체'; go(state.tab); break;
     case 'cat': state.cat = t.dataset.cat; render(); break;
     case 'open': openDetail(t.dataset.id); break;
     case 'back':
@@ -1924,6 +2088,8 @@ document.addEventListener('input', e => {
   const el = e.target, ds = el.dataset;
   if (el.id === 'q') { state.q = el.value; $('list').innerHTML = listHTML(); return; }
   if (ds.bp != null) { benchInput(el); return; }
+  if (el.id === 'pq') { state.pq = el.value; $('plist').innerHTML = pantryListHTML(); return; }
+  if (ds.pp != null) { pantryInput(el); return; }
   if (el.id === 'set-hold') {
     const i = +el.value; saveSplashCfg(Object.assign(splashCfg(), { hold: HOLDS[i] }));
     $('hold-now').textContent = HOLD_LABEL[i]; el.setAttribute('aria-valuetext', HOLD_LABEL[i]);
@@ -1936,8 +2102,8 @@ document.addEventListener('input', e => {
   else if (ds.i != null) {
     const k = +ds.i, i = d.ingredients[k];
     i[ds.k] = el.value;
-    if (ds.k === 'unit') el.closest('.ing-ed').querySelector('.u').textContent = el.value;
-    $('ing-' + k + '-out').textContent = won(ingCost(i));
+    if (ds.k === 'name' || ds.k === 'unit') $('ing-' + k + '-r2').innerHTML = ingR2(i, k);
+    else $('ing-' + k + '-out').textContent = won(ingCost(i));
   }
   else if (ds.ps != null) d.prepSteps[+ds.ps] = el.value;
   else if (ds.ss != null) d.serviceSteps[+ds.ss].text = el.value;
@@ -1945,6 +2111,7 @@ document.addEventListener('input', e => {
   updateLive();
 });
 document.addEventListener('change', e => {
+  if (e.target.dataset && e.target.dataset.pp != null && e.target.dataset.pk === 'name') { pantryRename(e.target); return; }
   if (e.target.id === 'splash-file') { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) setCustomSplash(f); return; }
   if (e.target.dataset && e.target.dataset.rphoto != null) { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) benchReceipt(f); return; }
   if (e.target.dataset && e.target.dataset.dphoto != null) { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) benchPhoto(+e.target.dataset.dphoto, f); return; }
