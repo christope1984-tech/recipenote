@@ -362,6 +362,7 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 /* 영수증 */
 .rc-photo{width:100%;max-width:100%;max-height:260px;border-radius:10px;overflow:hidden;background:var(--surface);display:grid;place-items:center}
 .rc-photo img{max-width:100%;max-height:260px;object-fit:contain;display:block}
+.rc-photo.big,.rc-photo.big img{max-height:520px}
 .rc-msg{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
 .rc-acts{display:flex;gap:8px;flex-wrap:wrap}
 .rc-acts .btn{flex:1 1 140px;width:auto;height:44px}
@@ -426,6 +427,8 @@ input[type=range]{width:100%;height:32px;margin:0;accent-color:var(--accent)}
 .t-keep b{color:#23794A}.t-change b{color:#A86A12}.t-avoid b{color:#C2410C}
 .p-idea{border-left:4px solid #D7B061;background:#FBF6EC;border-radius:0 8px 8px 0;padding:10px 14px}
 .p-idea p{margin:4px 0 0}
+.p-rcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.p-rcbig{height:560px;border-radius:8px;border:1px solid #E6DCD9;background:#F3EEEC center/contain no-repeat}
 .p-rc{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;border:1px solid #E6DCD9;border-radius:10px;padding:10px}
 .p-rcimg{width:200px;height:280px;border-radius:6px;background:#F3EEEC center/contain no-repeat}
 .p-tbl{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
@@ -514,6 +517,10 @@ try {
    - 장사 전 밑작업: prepSteps(순서), prepStorage(보관), prepBatch(하루 준비량), 재료 stage:'prep'
    - 주문 후 조리:   serviceSteps[{text,min}], targetMin(목표 서빙 시간), 재료 stage:'service'
    재료량은 모두 1접시 기준 → 밑작업 화면에서 하루 준비량만큼 곱해 보여줌 */
+/* 숨겨 둔 기능 — true로 바꾸면 다시 나타남
+   customSplash: 설정에서 첫 화면 이미지 직접 바꾸기
+   receiptOCR:   영수증 글자 자동 읽기·영수증 보고서 (정확도 문제로 숨김, 사진 첨부만 사용) */
+const FEATURES = { customSplash: false, receiptOCR: false };
 const KEY = 'seoyeonRecipeNote.v3';
 const CATS = ['안주','탕·전골','식사','사이드','음료'];
 const UNITS = ['g','kg','ml','L','개','장','모','단','봉','팩','큰술','작은술','컵'];
@@ -936,7 +943,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.3 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.4 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1119,7 +1126,7 @@ function bSimpleBody(r) {
     + bSec(3, 's3', '점수', '눌러서 1~5점', bScores(r, false))
     + bSec(4, 's4', '정리', '가져올 것 · 바꿀 것 · 피할 것', bGrid(B_THREE, 'wrap'))
     + bSec(5, 's5', '레시피 아이디어', '우리 가게 메뉴로 옮길 생각', bIdeas(r, pick(B_IDEA, ['from', 'myway'])))
-    + bSec(6, 'receipt', '영수증', '찍어 두면 상호·장소·일시·메뉴·금액을 읽어 정리해요', bReceipts(r));
+    + bSec(6, 'receipt', '영수증', RC_HINT(), bReceipts(r));
 }
 function bDetailBody(r) {
   return B_SECTIONS.map(s => {
@@ -1129,7 +1136,7 @@ function bDetailBody(r) {
       + `<div class="bsub"><h3>레시피 아이디어</h3><p>레시피노트로 옮길 카드예요. 밑작업과 영업 조리를 나눠 미리 짐작해 둬요</p></div>` + bIdeas(r, B_IDEA);
     else inner = bGrid(s.fields, s.id);
     return bSec(s.no, s.id, s.title, s.hint, inner);
-  }).join('') + bSec(8, 'receipt', '영수증', '찍어 두면 상호·장소·일시·메뉴·금액을 읽어 정리해요', bReceipts(r));
+  }).join('') + bSec(8, 'receipt', '영수증', RC_HINT(), bReceipts(r));
 }
 function viewBench() {
   setTop('벤치마킹노트', false);
@@ -1426,7 +1433,10 @@ function pdfHTML(r, detail) {
     const rows = detail ? [['맛있었던 이유', d.why], ['예상 밑작업', d.prep], ['예상 영업 조리', d.cook], ['목표 시간', d.target && d.target + '분'], ['시험 결과', d.result]] : [];
     html += `<div class="pb">${i === 0 ? '<h2 class="ps">레시피 아이디어</h2>' : ''}<div class="p-idea"><div class="p-dname">${esc(d.from || '아이디어 ' + (i + 1))}</div>${d.myway ? `<p>→ ${esc(d.myway)}</p>` : ''}${kv(rows)}</div></div>`;
   });
-  r.receipts.filter(rc => rc.status === 'ok').forEach((rc, i) => {
+  if (!FEATURES.receiptOCR && r.receipts.length) {
+    html += `<div class="pb"><h2 class="ps">영수증</h2><div class="p-rcs">${r.receipts.map(rc => `<div class="p-rcbig" data-pid="${rc.photo}"></div>`).join('')}</div></div>`;
+  }
+  if (FEATURES.receiptOCR) r.receipts.filter(rc => rc.status === 'ok').forEach((rc, i) => {
     const sm = rcSums(rc), items = rc.items.filter(x => x.name);
     html += `<div class="pb">${i === 0 ? '<h2 class="ps">영수증</h2>' : ''}<div class="p-rc">
       <div class="p-rcimg" data-pid="${rc.photo}"></div>
@@ -1668,8 +1678,10 @@ async function benchReceipt(file) {
   try {
     const blob = await resizeBlob(file, 3200, 0.92);
     const id = 'rc-' + buid(); await PhotoDB.put(id, blob);
-    const rc = bBlankReceipt(id); r.receipts.push(rc); bTouch(); bRerender();
-    readReceipt(r.id, rc.id);
+    const rc = bBlankReceipt(id);
+    if (!FEATURES.receiptOCR) rc.status = 'photo';
+    r.receipts.push(rc); bTouch(); bRerender();
+    if (FEATURES.receiptOCR) readReceipt(r.id, rc.id); else toast('영수증 사진을 저장했습니다');
   } catch (e) { toast('사진을 저장하지 못했습니다. 다시 시도해 주세요.'); }
 }
 async function readReceipt(rid, cid) {
@@ -1727,7 +1739,12 @@ const RC_FIELDS = [
   { k: 'datetime', label: '일시', ph: '2026-10-23 20:31', h: 1 }, { k: 'total', label: '결제 금액', type: 'number', unit: '원', h: 1 },
   { k: 'pay', label: '결제 수단', ph: '예: 신한카드', h: 1 }, { k: 'bizno', label: '사업자번호', h: 1 }
 ];
+const RC_HINT = () => FEATURES.receiptOCR ? '찍어 두면 상호·장소·일시·메뉴·금액을 읽어 정리해요' : '사진으로 남겨 두면 메뉴와 가격을 나중에 확인할 수 있어요';
 function rcHTML(rc, j) {
+  if (!FEATURES.receiptOCR) return `<div class="bitem" data-key="receipts">
+    <div class="bitem-h"><h3>영수증 ${j + 1}</h3><button type="button" class="btn-sm danger" data-act="b-rcDel" data-j="${j}">지우기</button></div>
+    <div class="rc-photo big"><img data-pid="${rc.photo}" alt="영수증 ${j + 1} 사진"></div>
+  </div>`;
   const chip = { reading: ['warn', '읽는 중…'], ok: ['good', `읽기 완료 · 정확도 ${rc.conf}%`], low: ['bad', `흐릿함 · 정확도 ${rc.conf}%`], fail: ['bad', '읽지 못함'] }[rc.status] || ['none', ''];
   let body = '';
   if (rc.status === 'reading') body = '<p class="rc-msg">영수증 글자를 읽고 있어요. 처음 한 번은 글자 인식 자료(약 2MB)를 내려받습니다.</p>';
@@ -2185,7 +2202,7 @@ function resizeImage(file, max = 900, q = 0.72) {
 
 /* ===== 6. 시작 표지: 정한 시간만큼 보여 준 뒤 표지 넘김(0.95초) — 이미지·시간은 설정에서 ===== */
 /* 숨겨 둔 기능 — true로 바꾸면 설정에 다시 나타남 */
-const FEATURES = { customSplash: false };
+
 /* 첫 화면 변경 의뢰 연락처 (판매용으로 바꿀 때 여기만 고치면 됨) */
 const MAKER = { name: '비즈업컨설팅 문사무장', url: 'https://blog.naver.com/biznconsulting', note: '가게 표지·로고로 첫 화면을 만들어 드립니다.' };
 const SPLASH_KEY = 'seoyeonRecipeNote.splash';
