@@ -1059,7 +1059,7 @@ function viewSettings() {
     <button class="btn danger" data-act="reset">모든 메뉴 삭제</button>
   </section>
   ${installHTML()}
-  <p class="stamp">서연이의 레시피노트 v1.8 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
+  <p class="stamp">서연이의 레시피노트 v1.9 · 메뉴 ${db.recipes.length}개 · 벤치마킹 ${db.bench.length}개 저장됨</p>
   </div>`;
 }
 
@@ -1115,7 +1115,7 @@ const B_SECTIONS = [
     { k:'drinks', label:'술 가격과 비중', ph:'예: 소주 5,000원, 팀마다 1~2병' },
     { k:'talk', label:'사장의 말', type:'area', ph:'언제, 어떤 말로 말을 걸었나' },
     { k:'last', label:'마지막 인상', type:'area', ph:'계산하고 나갈 때 들은 한마디' } ] },
-  { id:'wrap', no:7, short:'정리', title:'정리', hint:'점수 옆에 ‘왜’ 한 줄, 그리고 가져올 것·바꿀 것·피할 것', special:true }
+  { id:'wrap', no:7, short:'정리', title:'정리', hint:'점수 옆에 ‘왜’ 한 줄, 그리고 배울 점·수정할 점·피할 점', special:true }
 ];
 const B_DISH = [
   { k:'name', label:'메뉴 이름', ph:'예: 가리비 버터찜' },
@@ -1142,9 +1142,9 @@ const B_IDEA = [
   { k:'result', label:'시험 결과', ph:'시험한 날, 좋았던 점, 고칠 점' }
 ];
 const B_THREE = [
-  { k:'keep', label:'가져올 것', type:'area', ph:'예: 칠판에 오늘 남은 접시 수 적기' },
-  { k:'change', label:'바꿀 것', type:'area', ph:'예: 2인 찜을 1.5인분 작은 냄비로' },
-  { k:'avoid', label:'피할 것', type:'area', ph:'예: 바쁠 때 말없이 오래 기다리게 한 것' }
+  { k:'keep', label:'배울 점', help:'이런 건 우리도 닮고 싶다', type:'area', ph:'예: 칠판에 오늘 남은 접시 수 적기' },
+  { k:'change', label:'수정할 점', help:'이 가게도 이걸 고치면 좋겠다', type:'area', ph:'예: 2인 찜을 1.5인분 작은 냄비로' },
+  { k:'avoid', label:'피할 점', help:'이렇게 하면 안 되겠다', type:'area', ph:'예: 바쁠 때 말없이 오래 기다리게 한 것' }
 ];
 const B_SCORES = [
   ['taste','맛','1 생각 안 남 · 3 무난 · 5 다음 날도 생각남'],
@@ -1214,14 +1214,14 @@ function bField(f, base) {
     ctl = `<input id="${id}" type="${t}" data-bp="${path}" value="${esc(v)}" placeholder="${esc(f.ph || '')}"${extra}>`;
     if (f.unit) ctl = `<div class="unit">${ctl}<span>${esc(f.unit)}</span></div>`;
   }
-  const inner = `<label class="flabel" for="${id}">${esc(f.label)}</label>${ctl}${f.help ? `<span class="fhelp">${esc(f.help)}</span>` : ''}`;
+  const inner = `<label class="flabel" for="${id}">${esc(f.label)}</label>${f.help ? `<span class="fhelp">${esc(f.help)}</span>` : ''}${ctl}`;
   return `<div class="${cls}">${f.tone ? `<div class="tone-${f.tone}">${inner}</div>` : inner}</div>`;
 }
 const bGrid = (fields, base) => `<div class="bgrid">${fields.map(f => bField(f, base)).join('')}</div>`;
 const bSec = (no, id, title, hint, inner) => `<section class="bsec" id="bs-${id}"><div class="bsec-h"><span class="no">${no}</span><div><h2>${title}</h2>${hint ? `<p>${hint}</p>` : ''}</div></div>${inner}</section>`;
 function bDishes(r, defs) {
-  return `<div class="bstack">${r.dishes.map((d, i) => `<div class="bitem" data-key="dishes"><div class="bitem-h"><h3>접시 ${i + 1} <span class="ctag" data-bcook="${i}"></span></h3>${r.dishes.length > 1 ? `<button type="button" class="btn-sm danger" data-act="b-del" data-key="dishes" data-i="${i}">지우기</button>` : ''}</div>${dishPhotoHTML(d, i)}${bGrid(defs, 'dishes.' + i)}</div>`).join('')}</div>
-  <button type="button" class="add" data-act="b-add" data-key="dishes">+ 접시 더하기</button>`;
+  return `<div class="bstack">${r.dishes.map((d, i) => `<div class="bitem" data-key="dishes"><div class="bitem-h"><h3>주문 ${i + 1} <span class="ctag" data-bcook="${i}"></span></h3>${r.dishes.length > 1 ? `<button type="button" class="btn-sm danger" data-act="b-del" data-key="dishes" data-i="${i}">지우기</button>` : ''}</div>${dishPhotoHTML(d, i)}${bGrid(defs, 'dishes.' + i)}</div>`).join('')}</div>
+  <button type="button" class="add" data-act="b-add" data-key="dishes">+ 주문 더하기</button>`;
 }
 function bScores(r, detail) {
   return `<div>${B_SCORES.map(([k, name, hint]) => `<div class="score-row">
@@ -1240,7 +1240,7 @@ function bSimpleBody(r) {
   return bSec(1, 's1', '가게', '이름과 쓴 돈만 적어도 돼요', bGrid(pick(B_SECTIONS[0].fields, ['store', 'type', 'date', 'people', 'spent', 'perHead']), 'basic'))
     + bSec(2, 's2', '먹은 메뉴', '접시마다 한 줄', bDishes(r, pick(B_DISH, ['name', 'price', 'w1'])))
     + bSec(3, 's3', '점수', '눌러서 1~5점', bScores(r, false))
-    + bSec(4, 's4', '정리', '가져올 것 · 바꿀 것 · 피할 것', bGrid(B_THREE, 'wrap'))
+    + bSec(4, 's4', '정리', '배울 점 · 수정할 점 · 피할 점', bGrid(B_THREE, 'wrap'))
     + bSec(5, 's5', '레시피 아이디어', '우리 가게 메뉴로 옮길 생각', bIdeas(r, pick(B_IDEA, ['from', 'myway'])))
     + bSec(6, 'receipt', '영수증', RC_HINT(), bReceipts(r));
 }
@@ -1266,7 +1266,7 @@ function viewBench() {
       <div class="c-stats"><span><small>방문</small>${day}</span><span><small>1인 객단가</small>${ph ? won(ph) : '—'}</span><span><small>접시 · 아이디어</small>${r.dishes.filter(d => d.name).length} · ${r.ideas.filter(d => d.from || d.myway).length}</span></div>
     </button>`;
   }).join('');
-  return `<p class="lead">다녀온 가게를 기록하고, 가져올 점은 레시피 아이디어로 남겨 두세요.</p>
+  return `<p class="lead">다녀온 가게를 기록하고, 배울 점은 레시피 아이디어로 남겨 두세요.</p>
   ${list.length ? `<div class="clist">${rows}</div>` : `<div class="empty">아직 기록한 가게가 없습니다.<br>아래 <b>새 보고서</b>로 시작하세요.</div>`}`;
 }
 function viewBenchEdit() {
@@ -1327,7 +1327,7 @@ function bText(r) {
     + line('하루 손님 짐작', bDaily(r) ? bDaily(r) + '명' : '') + line('하루 매출 짐작', bDaily(r) && bPerHead(r) ? '약 ' + manwon(bDaily(r) * bPerHead(r)) : '')
     + line('술', g.drinks) + line('사장의 말', g.talk) + line('마지막 인상', g.last);
   out += '\n7. 정리\n' + B_SCORES.map(s => w.scores[s[0]] ? `· ${s[1]} ${w.scores[s[0]]}점${w.reasons[s[0]] ? ' — ' + w.reasons[s[0]] : ''}\n` : '').join('')
-    + (bAvg(r) ? `· 평균 ${bAvg(r)}점\n` : '') + line('가져올 것', w.keep) + line('바꿀 것', w.change) + line('피할 것', w.avoid);
+    + (bAvg(r) ? `· 평균 ${bAvg(r)}점\n` : '') + line('배울 점', w.keep) + line('수정할 점', w.change) + line('피할 점', w.avoid);
   const ideas = r.ideas.filter(d => d.from || d.myway);
   if (ideas.length) out += '\n레시피 아이디어\n' + ideas.map((d, i) => `■ 아이디어 ${i + 1}${d.from ? ': ' + d.from : ''}\n`
     + line('맛있었던 이유', d.why) + line('내 방식으로', d.myway) + line('예상 밑작업', d.prep) + line('예상 영업 조리', d.cook) + line('목표 시간', d.target ? d.target + '분' : '') + line('시험 결과', d.result)).join('');
@@ -1415,7 +1415,7 @@ function benchClick(a, t) {
     }
     case 'b-del': {
       const key = t.dataset.key, i = +t.dataset.i;
-      ask(`${key === 'dishes' ? '접시' : '아이디어'} ${i + 1} 지우기`, '적어 둔 내용과 사진이 함께 지워집니다.', '지우기', () => { if (key === 'dishes') dropPhoto(r.dishes[i].photo); r[key].splice(i, 1); bTouch(); bRerender(); });
+      ask(`${key === 'dishes' ? '주문' : '아이디어'} ${i + 1} 지우기`, '적어 둔 내용과 사진이 함께 지워집니다.', '지우기', () => { if (key === 'dishes') dropPhoto(r.dishes[i].photo); r[key].splice(i, 1); bTouch(); bRerender(); });
       break;
     }
     case 'b-delReport':
@@ -1443,7 +1443,7 @@ function benchClick(a, t) {
     }
     case 'b-photoDel': {
       const i = +t.dataset.i;
-      ask(`접시 ${i + 1} 사진 지우기`, '지운 사진은 되돌릴 수 없습니다.', '지우기', () => { dropPhoto(r.dishes[i].photo); r.dishes[i].photo = ''; bTouch(); bRerender(); });
+      ask(`주문 ${i + 1} 사진 지우기`, '지운 사진은 되돌릴 수 없습니다.', '지우기', () => { dropPhoto(r.dishes[i].photo); r.dishes[i].photo = ''; bTouch(); bRerender(); });
       break;
     }
     case 'b-mk': {
@@ -1538,7 +1538,7 @@ async function benchPhoto(i, file) {
 const CAM_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 const ALB_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>';
 function dishPhotoHTML(d, i) {
-  return `${d.photo ? `<div class="dphoto"><img data-pid="${d.photo}" alt="접시 ${i + 1} 사진"><button type="button" class="dp-x" data-act="b-photoDel" data-i="${i}" aria-label="접시 ${i + 1} 사진 지우기">×</button></div>` : ''}
+  return `${d.photo ? `<div class="dphoto"><img data-pid="${d.photo}" alt="주문 ${i + 1} 사진"><button type="button" class="dp-x" data-act="b-photoDel" data-i="${i}" aria-label="주문 ${i + 1} 사진 지우기">×</button></div>` : ''}
   <div class="dp-btns">
     <label class="dp-btn" for="cam-${i}">${CAM_ICO}${d.photo ? '다시 찍기' : '사진 찍기'}</label>
     <label class="dp-btn" for="alb-${i}">${ALB_ICO}앨범에서</label>
@@ -1561,7 +1561,7 @@ async function pdfLibs() {
 }
 function mobileSummary(r) {     // 모바일형 첫 화면: 핵심만 한눈에
   const w = r.wrap, ideas = r.ideas.filter(d => d.from || d.myway);
-  const rows = [['keep', '가져올 것'], ['change', '바꿀 것'], ['avoid', '피할 것']].filter(([k]) => w[k]);
+  const rows = [['keep', '배울 점'], ['change', '수정할 점'], ['avoid', '피할 점']].filter(([k]) => w[k]);
   if (!rows.length && !ideas.length) return '';
   return `<div class="r-sum"><span class="r-lbl">한눈에 보기</span>
     ${rows.map(([k, l]) => `<div class="s-row t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}
@@ -1622,7 +1622,7 @@ function pdfHTML(r, detail, mobile) {
       <div class="r-dish${d.photo ? '' : ' nophoto'}">
         ${d.photo ? `<div class="r-dph" data-pid="${d.photo}"><span class="r-dno">${i + 1}</span></div>` : ''}
         <div class="r-dbody">
-          ${d.photo ? '' : `<span class="r-lbl">접시 ${i + 1}</span>`}
+          ${d.photo ? '' : `<span class="r-lbl">주문 ${i + 1}</span>`}
           <div class="r-dname">${esc(d.name || '이름 없음')}</div>
           ${chips ? `<div class="r-chips">${chips}</div>` : ''}
           ${words.length ? `<div class="r-words">${words.map(x => `<span>#${esc(x)}</span>`).join('')}</div>` : ''}
@@ -1654,7 +1654,7 @@ function pdfHTML(r, detail, mobile) {
     </div>`);
 
   /* 정리 */
-  const three = [['keep', '가져올 것'], ['change', '바꿀 것'], ['avoid', '피할 것']].filter(([k]) => w[k]);
+  const three = [['keep', '배울 점'], ['change', '수정할 점'], ['avoid', '피할 점']].filter(([k]) => w[k]);
   if (three.length && !mobile) html += sec('정리', '우리 가게에 적용할 점', `<div class="r-three">${three.map(([k, l]) => `<div class="t-${k}"><span class="r-tl"><i></i>${l}</span><p>${esc(w[k])}</p></div>`).join('')}</div>`);
 
   /* 레시피 아이디어 */
