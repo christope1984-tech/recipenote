@@ -2087,7 +2087,7 @@ function openPreview(layout) {
     </div></div>
     <div class="pv-body">${pages.map((pg, i) => `<div class="pv-page" style="aspect-ratio:${PW}/${pg.PH.toFixed(2)}">${pg.items.map(p => `<img src="${p.u}" alt="" style="left:${pct(p.x, PW)};top:${pct(p.y, pg.PH)};width:${pct(p.w, PW)}">`).join('')}${pages.length > 1 ? `<span class="pv-no">${i + 1} / ${pages.length}</span>` : ''}</div>`).join('')}
       <p class="pv-note">공유되는 PDF와 같은 모습입니다. 고칠 곳이 있으면 닫고 고친 뒤 다시 누르세요.</p></div>
-    <div class="pv-bar"><button class="btn" data-act="b-pvClose">닫고 고치기</button><button class="btn fill" data-act="b-pvShare">카카오톡으로 공유</button></div>`;
+    <div class="pv-bar"><button class="btn" data-act="b-pvClose">닫기</button><button class="btn fill" data-act="b-pvShare">카카오톡으로 공유</button></div>`;
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
   if (keepScroll === null) el.querySelector('.pv-x').focus();
 }
